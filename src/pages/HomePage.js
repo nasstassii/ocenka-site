@@ -1,0 +1,151 @@
+import React, { useState, useEffect } from 'react';
+import Header from '../components/Header';
+import ReviewsCarousel from '../components/ReviewsCarousel';
+
+function HomePage({ onOpenAuth }) {
+  const [heroText, setHeroText] = useState('');
+
+  useEffect(() => {
+    setHeroText(localStorage.getItem('content_hero') || 'Добро пожаловать в мою оценочную практику! Меня зовут Бакаленко Ольга, и я – профессиональный оценщик с многолетним опытом в сфере оценки имущества. Позвольте мне стать вашим надежным партнером в сфере оценки!');
+  }, []);
+
+  const handleQuestionSubmit = (e) => {
+    e.preventDefault();
+    const name = e.target.name.value.trim();
+    const email = e.target.email.value.trim();
+    if (!name || !email) {
+      alert('Укажите имя и email');
+      return;
+    }
+    alert('Спасибо! Ваш вопрос отправлен.');
+    e.target.reset();
+  };
+
+  return (
+    <>
+      <Header onOpenAuth={onOpenAuth} />
+      
+      <section className="hero">
+        <div className="container hero-grid">
+          <div className="hero-content">
+            <div className="hero-badge">частнопрактикующий оценщик</div>
+            <h1>Ольга Бакаленко<br /><span>объективная оценка</span> вашего имущества</h1>
+            <p className="hero-desc">{heroText}</p>
+            <div>
+              <button onClick={onOpenAuth} className="btn-primary">Заказать оценку <i className="fas fa-arrow-right"></i></button>
+              <a href="/services" className="btn-outline">Услуги</a>
+            </div>
+          </div>
+          <div className="hero-photo">
+            <img src="photo.jpg" alt="Ольга Бакаленко" onError={(e) => e.target.src = 'https://placehold.co/450x500/4A7A9E/white?text=Ольга+Бакаленко'} />
+          </div>
+        </div>
+      </section>
+
+      <section className="why-me">
+        <div className="container">
+          <div className="section-title"><h2>Почему выбирают меня</h2></div>
+          <div className="why-grid">
+            <div className="why-item"><div className="why-number">15 лет</div><div className="why-label">оценочной деятельности</div></div>
+            <div className="why-item"><div className="why-number">500+</div><div className="why-label">успешных отчётов</div></div>
+            <div className="why-item"><div className="why-number">100%</div><div className="why-label">принятие в судах</div></div>
+            <div className="why-item"><div className="why-number">15+</div><div className="why-label">регионов РФ</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section className="services">
+        <div className="container">
+          <div className="section-title"><h2>Услуги</h2></div>
+          <div className="services-grid">
+            <div className="service-card">
+              <div className="service-img" style={{ backgroundImage: "url('build.jpg')" }}></div>
+              <h3>Оценка недвижимости</h3>
+              <p>квартиры, дома, коммерческая недвижимость, земельные участки, гаражи</p>
+            </div>
+            <div className="service-card">
+              <div className="service-img" style={{ backgroundImage: "url('car.jpg')" }}></div>
+              <h3>Оценка движимого имущества</h3>
+              <p>автотранспорт, строительная техника, оборудование, спецтехника</p>
+            </div>
+            <div className="service-card">
+              <div className="service-img" style={{ backgroundImage: "url('calc.jpg')" }}></div>
+              <h3>Оценка права пользования</h3>
+              <p>арендная плата, право пользования нежилыми помещениями</p>
+            </div>
+          </div>
+          <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+            <a href="/services" className="btn-primary">Подробнее об услугах <i className="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+      </section>
+
+      <section className="qualifications">
+        <div className="container">
+          <div className="section-title"><h2>Квалификация</h2></div>
+          <div className="qualifications-grid">
+            <div className="qual-left">
+              <p><strong>Образование:</strong> высшее юридическое (РГЭУ «РИНХ») и профессиональная переподготовка по программе «Оценка собственности».</p>
+              <h3>Квалификационные аттестаты</h3>
+              <ul><li>Оценка недвижимости (№ 038432‑1 от 07.06.2024)</li><li>Оценка движимого имущества (№ 037098‑2 от 24.05.2024)</li></ul>
+              <h3>Членство в СРО</h3><p>Ассоциация СРО «Национальная коллегия специалистов-оценщиков», регистрационный номер 02082 от 29.07.2011 г.</p>
+              <h3>Страхование ответственности</h3><p>СПАО «Ингосстрах», полис № 433-589-116108/25, сумма 300 000 ₽</p>
+            </div>
+            <div className="qual-right">
+              <div className="doc-badge"><i className="fas fa-graduation-cap"></i><span>Диплом юриста</span></div>
+              <div className="doc-badge"><i className="fas fa-file-alt"></i><span>Диплом оценщика</span></div>
+              <div className="doc-badge"><i className="fas fa-certificate"></i><span>Аттестат недвижимость</span></div>
+              <div className="doc-badge"><i className="fas fa-certificate"></i><span>Аттестат движимое имущество</span></div>
+              <div className="doc-badge"><i className="fas fa-shield-alt"></i><span>Страховой полис</span></div>
+              <a href="/qualifications" className="btn-primary" style={{ marginTop: '1rem', display: 'inline-flex', padding: '10px 24px', fontSize: '0.85rem' }}>Подробнее о квалификации <i className="fas fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="reviews" id="reviews">
+        <div className="container">
+          <div className="section-title"><h2>Отзывы</h2></div>
+          <ReviewsCarousel />
+        </div>
+      </section>
+
+      <section className="cta-banner">
+        <div className="container">
+          <h3>Нужна оценка имущества?</h3>
+          <p>Оставьте заявку — я рассчитаю стоимость и сроки в течение часа</p>
+          <button onClick={onOpenAuth} className="btn-primary" style={{ background: 'white', color: 'var(--blue)' }}>Оставить заявку <i className="fas fa-arrow-right"></i></button>
+        </div>
+      </section>
+
+      <section className="contact" id="contact">
+        <div className="container contact-wrapper">
+          <div className="contact-info">
+            <h2>Контакты</h2>
+            <p>Есть вопросы? Напишите или позвоните — я отвечу в ближайшее время</p>
+            <div className="contact-detail"><i className="fas fa-phone-alt"></i> <span>+7 (906) 185-96-69</span></div>
+            <div className="contact-detail"><i className="fas fa-envelope"></i> <span>bakalenko-olga@yandex.ru</span></div>
+            <div className="contact-detail"><i className="fas fa-map-marker-alt"></i> <span>Работаю онлайн по всей России</span></div>
+            <div className="contact-detail hours"><i className="fas fa-clock"></i> <span>Пн–Пт: 9:00 – 17:00</span></div>
+          </div>
+          <div className="contact-form">
+            <form onSubmit={handleQuestionSubmit}>
+              <input type="text" name="name" placeholder="Ваше имя" />
+              <input type="email" name="email" placeholder="Ваш Email" />
+              <textarea name="message" rows="3" placeholder="Ваш вопрос"></textarea>
+              <button type="submit">Отправить вопрос <i className="fas fa-arrow-right"></i></button>
+            </form>
+          </div>
+        </div>
+      </section>
+      
+      <footer>
+        <div className="container">
+          <p>© 2026 Ольга Бакаленко — Частнопрактикующий оценщик недвижимости и движимого имущества</p>
+        </div>
+      </footer>
+    </>
+  );
+}
+
+export default HomePage;
