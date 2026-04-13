@@ -143,12 +143,14 @@ h3 {
   font-size: 14px;
   display: inline-block;
   border: none;
+  white-space: nowrap;
 }
 
 .btn-cabinet:hover {
   background: var(--blue-dark);
 }
 
+/* ===== НАВИГАЦИЯ ===== */
 nav {
   background: white;
   border-bottom: 1px solid var(--border);
@@ -165,6 +167,10 @@ nav {
   flex-wrap: wrap;
   gap: 16px;
   padding: 20px 0;
+}
+
+.logo {
+  flex-shrink: 0;
 }
 
 .logo a {
@@ -191,6 +197,12 @@ nav {
   list-style: none;
   flex-wrap: wrap;
   align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li {
+  display: inline-block;
 }
 
 .nav-links a {
@@ -200,6 +212,7 @@ nav {
   color: var(--text-dark);
   transition: 0.2s;
   font-family: 'Inter', sans-serif;
+  white-space: nowrap;
 }
 
 .nav-links a:hover {
@@ -550,7 +563,7 @@ nav {
 }
 
 .admin-comment {
-  background: #f3f6f9;
+  background: #F2F6FA;
   padding: 12px 16px;
   border-radius: 12px;
   margin: 16px 0;
@@ -1343,11 +1356,14 @@ nav {
   padding: 10px 12px;
 }
 
-/* Скидки  */
+/* Скидки - чуть заметный фон */
 .price-table tr.discount-row td {
-  background: #e1ebed;
+  background: #F5F0E0;
 }
 
+.price-table tr.discount-row:hover td {
+  background: #F5F0E0;
+}
 
 .price-note {
   font-size: 12px;
@@ -1463,6 +1479,24 @@ nav {
 
 .doc-link:hover {
   text-decoration: underline;
+}
+
+/* Кнопки скачивания документов */
+.doc-link-btn {
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.doc-link-btn:hover {
+  background: var(--blue-dark);
 }
 
 /* ===== СПИСОК КВАЛИФИКАЦИИ ===== */
@@ -1599,4 +1633,176 @@ footer {
 
 footer p {
   margin-top: 0;
+}
+
+/* ===== АДАПТИВ ДЛЯ ПЛАНШЕТОВ (до 900px) ===== */
+@media (max-width: 900px) {
+  .container {
+    padding: 0 24px;
+  }
+  
+  h1 {
+    font-size: 2.2rem;
+  }
+  
+  .hero-grid {
+    flex-direction: column;
+  }
+  
+  .hero-content {
+    max-width: 100%;
+  }
+  
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .qualifications-grid {
+    flex-direction: column;
+  }
+  
+  .contact-wrapper {
+    flex-direction: column;
+  }
+  
+  .reviews-container {
+    padding: 0 50px;
+  }
+  
+  .review-card {
+    flex: 0 0 calc(50% - 0.9rem);
+  }
+  
+  .slider-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+  }
+  
+  .profile-form {
+    flex-direction: column;
+  }
+  
+  .docs-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .price-table th,
+  .price-table td {
+    font-size: 0.75rem;
+    padding: 8px;
+  }
+  
+  .page-hero h1 {
+    font-size: 1.6rem;
+  }
+  
+  .doc-simple {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  /* Адаптив шапки */
+  .nav-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .nav-links {
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .nav-links a,
+  .btn-cabinet {
+    white-space: nowrap;
+  }
+}
+
+/* ===== АДАПТИВ ДЛЯ МОБИЛЬНЫХ (до 600px) ===== */
+@media (max-width: 600px) {
+  .container {
+    padding: 0 16px;
+  }
+  
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .reviews-container {
+    padding: 0 30px;
+  }
+  
+  .review-card {
+    flex: 0 0 100%;
+  }
+  
+  .slider-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 0.9rem;
+  }
+  
+  .why-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .why-item {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .hero-content h1 {
+    font-size: 1.8rem;
+  }
+  
+  .btn-outline {
+    margin-left: 0;
+    margin-top: 1rem;
+  }
+  
+  .cabinet-tabs {
+    gap: 0.5rem;
+  }
+  
+  .tab-btn {
+    padding: 6px 16px;
+    font-size: 0.8rem;
+  }
+  
+  .cabinet-panel {
+    padding: 1rem;
+  }
+  
+  .request-card {
+    padding: 1rem;
+  }
+  
+  .request-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  /* Адаптив шапки */
+  .nav-links {
+    gap: 12px;
+  }
+  
+  .nav-links a,
+  .btn-cabinet {
+    font-size: 12px;
+    padding: 6px 14px;
+  }
+  
+  .logo h2 {
+    font-size: 20px;
+  }
+  
+  .logo p {
+    font-size: 11px;
+  }
 }

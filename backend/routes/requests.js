@@ -6,7 +6,6 @@ const { sendToAdmin, sendToClient } = require('../config/mailer');
 
 const router = express.Router();
 
-// Получить все заявки (для админа) - с телефоном
 router.get('/', async (req, res) => {
     try {
         const [requests] = await db.query(`
@@ -22,7 +21,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Получить заявки пользователя
 router.get('/user/:userId', async (req, res) => {
     const { userId } = req.params;
     try {
@@ -37,7 +35,6 @@ router.get('/user/:userId', async (req, res) => {
     }
 });
 
-// Создать заявку
 router.post('/', async (req, res) => {
     const { users_id_user, name, client_type, project_type, has_restrictions, purpose, description } = req.body;
 
@@ -71,7 +68,6 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Обновить статус
 router.put('/:id/status', async (req, res) => {
     const { id } = req.params;
     const { status, admin_comment } = req.body;
@@ -106,7 +102,6 @@ router.put('/:id/status', async (req, res) => {
     }
 });
 
-// УДАЛИТЬ ЗАЯВКУ
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
