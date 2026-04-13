@@ -140,42 +140,15 @@ function AuthModal({ isOpen, onClose }) {
             <input type="text" value={regName} onChange={(e) => setRegName(e.target.value)} placeholder="Ваше ФИО" disabled={isLoading} />
             <input type="email" value={regEmail} onChange={handleRegEmailChange} placeholder="Электронная почта" disabled={isLoading} />
             <input type="tel" value={regPhone} onChange={handleRegPhoneChange} placeholder="+7 (___) ___-__-__" disabled={isLoading} />
-            <div style={{ marginBottom: '16px' }}>
-              <input 
-                type="password" 
-                value={regPassword} 
-                onChange={handleRegPasswordChange} 
-                placeholder="Пароль" 
-                disabled={isLoading}
-                style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '30px', fontFamily: 'Inter, sans-serif', marginBottom: '8px' }}
-              />
-              {passwordStrength && (
-                <div>
-                  <div style={{ fontSize: '12px', color: passwordStrength === 'Надёжный пароль' ? '#4A9E6E' : (passwordStrength === 'Средний пароль' ? '#E8A04A' : '#c44') }}>
-                    {passwordStrength}
-                  </div>
-                </div>
-              )}
+            <div className="password-strength-wrapper">
+              <input type="password" value={regPassword} onChange={handleRegPasswordChange} placeholder="Пароль" disabled={isLoading} />
+              {passwordStrength && <div className={`password-strength ${passwordStrength === 'Надёжный пароль' ? 'strong' : (passwordStrength === 'Средний пароль' ? 'medium' : 'weak')}`}>{passwordStrength}</div>}
             </div>
-            
-            {/* ЧЕКБОКС С СОГЛАСИЕМ НА ОБРАБОТКУ ПЕРСОНАЛЬНЫХ ДАННЫХ */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-              <input 
-                type="checkbox" 
-                id="registerAgreement"
-                checked={agreement} 
-                onChange={(e) => setAgreement(e.target.checked)} 
-                disabled={isLoading}
-                style={{ width: '18px', height: '18px', cursor: 'pointer', margin: 0 }}
-              />
-              <label htmlFor="registerAgreement" style={{ fontSize: '13px', color: 'var(--text-muted)', cursor: 'pointer', margin: 0 }}>
-                Я принимаю условия <Link to="/privacy" target="_blank" style={{ color: 'var(--blue)' }}>Политики конфиденциальности</Link> и даю согласие на обработку персональных данных
-              </label>
+            <div className="checkbox-wrapper">
+              <input type="checkbox" id="registerAgreement" checked={agreement} onChange={(e) => setAgreement(e.target.checked)} disabled={isLoading} />
+              <label htmlFor="registerAgreement">Я принимаю условия <Link to="/privacy" target="_blank">Политики конфиденциальности</Link> и даю согласие на обработку персональных данных</label>
             </div>
-            
-            <button onClick={handleRegister} disabled={isLoading} style={{ width: '100%', background: 'var(--blue)', color: 'white', border: 'none', padding: '12px', borderRadius: '30px', fontWeight: '600', cursor: 'pointer' }}>
-              {isLoading ? 'Регистрация...' : 'Зарегистрироваться'}
-            </button>
+            <button onClick={handleRegister} disabled={isLoading}>{isLoading ? 'Регистрация...' : 'Зарегистрироваться'}</button>
           </div>
         )}
         {error && <div className="auth-error">{error}</div>}

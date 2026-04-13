@@ -92,7 +92,7 @@ function HomePage({ onOpenAuth }) {
               <p>арендная плата, право пользования нежилыми помещениями</p>
             </div>
           </div>
-          <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+          <div className="services-button">
             <a href="/services" className="btn-primary">Подробнее об услугах <i className="fas fa-arrow-right"></i></a>
           </div>
         </div>
@@ -115,7 +115,7 @@ function HomePage({ onOpenAuth }) {
               <div className="doc-badge"><i className="fas fa-certificate"></i><span>Аттестат недвижимость</span></div>
               <div className="doc-badge"><i className="fas fa-certificate"></i><span>Аттестат движимое имущество</span></div>
               <div className="doc-badge"><i className="fas fa-shield-alt"></i><span>Страховой полис</span></div>
-              <a href="/qualifications" className="btn-primary" style={{ marginTop: '1rem', display: 'inline-flex', padding: '10px 24px', fontSize: '0.85rem' }}>Подробнее о квалификации <i className="fas fa-arrow-right"></i></a>
+              <a href="/qualifications" className="btn-primary qualifications-link">Подробнее о квалификации <i className="fas fa-arrow-right"></i></a>
             </div>
           </div>
         </div>

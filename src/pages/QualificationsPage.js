@@ -28,7 +28,16 @@ function QualificationsPage() {
     return text.split('\n').filter(line => line.trim().startsWith('•')).map(line => line.replace('•', '').trim());
   };
 
-  if (loading) return <div style={{ textAlign: 'center', padding: '50px' }}>Загрузка...</div>;
+  const downloadFile = (filePath, fileName) => {
+    const link = document.createElement('a');
+    link.href = filePath;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  if (loading) return <div className="loading-spinner">Загрузка...</div>;
 
   return (
     <>
@@ -62,19 +71,25 @@ function QualificationsPage() {
       <section className="welcome-section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="welcome-card">
-            <h3 style={{ color: 'var(--blue)', marginBottom: '24px', fontSize: '20px' }}>Документы</h3>
+            <h3>Документы</h3>
             <div className="docs-block">
               <div className="doc-simple">
                 <span className="doc-name">Квалификационный аттестат — Оценка недвижимости (№ 038432-1)</span>
-                <a href="#" className="doc-link">Скачать PDF</a>
+                <button onClick={() => downloadFile('/documents/2. Бакаленко О.М. недвижимость 2024-06-07.pdf', 'Бакаленко О.М. недвижимость 2024-06-07.pdf')} className="doc-link-btn">
+                  Скачать PDF
+                </button>
               </div>
               <div className="doc-simple">
                 <span className="doc-name">Квалификационный аттестат — Оценка движимого имущества (№ 037098-2)</span>
-                <a href="#" className="doc-link">Скачать PDF</a>
+                <button onClick={() => downloadFile('/documents/3. Бакаленко О.М. движимое имущ. 2024-05-24.pdf', 'Бакаленко О.М. движимое имущество 2024-05-24.pdf')} className="doc-link-btn">
+                  Скачать PDF
+                </button>
               </div>
               <div className="doc-simple">
                 <span className="doc-name">Свидетельство СРО «НКСО» (рег. № 02082)</span>
-                <a href="#" className="doc-link">Скачать PDF</a>
+                <button onClick={() => downloadFile('/documents/1. Свидетельство НКСО.png', 'Свидетельство НКСО.png')} className="doc-link-btn">
+                  Скачать PNG
+                </button>
               </div>
             </div>
           </div>

@@ -1,0 +1,289 @@
+@media (max-width: 900px) {
+  .container {
+    padding: 0 24px;
+  }
+  
+  h1 {
+    font-size: 2.2rem;
+  }
+  
+  .hero-grid {
+    flex-direction: column;
+  }
+  
+  .hero-content {
+    max-width: 100%;
+  }
+  
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .qualifications-grid,
+  .contact-wrapper {
+    flex-direction: column;
+  }
+  
+  .reviews-container {
+    padding: 0 50px;
+  }
+  
+  .review-card {
+    flex: 0 0 calc(50% - 0.9rem);
+  }
+  
+  .docs-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .price-table th,
+  .price-table td {
+    font-size: 0.75rem;
+    padding: 8px;
+  }
+  
+  .page-hero h1 {
+    font-size: 1.6rem;
+  }
+  
+  .doc-simple {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .nav-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .nav-links {
+    justify-content: center;
+  }
+  
+  .price-table th:nth-child(2),
+  .price-table th:nth-child(3),
+  .price-table td:nth-child(2),
+  .price-table td:nth-child(3) {
+    text-align: left;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 0 16px;
+  }
+  
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .reviews-container {
+    padding: 0 30px;
+  }
+  
+  .review-card {
+    flex: 0 0 100%;
+  }
+  
+  .review-slider-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 0.9rem;
+  }
+  
+  .why-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .why-item {
+    width: 100%;
+  }
+  
+  .hero-content h1 {
+    font-size: 1.8rem;
+  }
+  
+  .btn-outline {
+    margin-left: 0;
+    margin-top: 1rem;
+  }
+  
+  .cabinet-tabs {
+    gap: 8px;
+  }
+  
+  .tab-btn {
+    padding: 6px 16px;
+    font-size: 12px;
+  }
+  
+  .cabinet-panel,
+  .request-card {
+    padding: 16px;
+  }
+  
+  .request-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .nav-links {
+    gap: 12px;
+  }
+  
+  .nav-links a,
+  .btn-cabinet {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+  
+  .logo h2 {
+    font-size: 20px;
+  }
+  
+  .logo p {
+    font-size: 11px;
+  }
+  
+  .profile-form-row .name-input {
+    min-width: 100%;
+  }
+  
+  .profile-form-row .phone-input {
+    width: 100%;
+  }
+  
+  .profile-form-row {
+    gap: 12px;
+  }
+  
+  .password-change-row {
+    flex-direction: column;
+  }
+  
+  .password-input,
+  .password-input-confirm {
+    width: 100%;
+  }
+  
+  .cta-banner {
+    padding: 40px 0;
+  }
+  
+  .cta-banner h3 {
+    font-size: 22px;
+  }
+  
+  .cta-banner p {
+    font-size: 14px;
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .container {
+    padding: 0 12px;
+  }
+  
+  .logo h2 {
+    font-size: 18px;
+  }
+  
+  .nav-links {
+    gap: 8px;
+  }
+  
+  .nav-links a,
+  .btn-cabinet {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+  
+  h1 {
+    font-size: 24px;
+  }
+  
+  .hero-badge {
+    font-size: 10px;
+  }
+  
+  .hero-desc {
+    font-size: 13px;
+  }
+  
+  .request-object {
+    font-size: 14px;
+  }
+  
+  .status {
+    font-size: 10px;
+    padding: 2px 8px;
+  }
+  
+  .file-section span {
+    font-size: 12px;
+    min-width: 120px;
+  }
+  
+  .file-item .file-name {
+    font-size: 11px;
+    max-width: 120px;
+  }
+  
+  .file-btn {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+}
+
+/* ===== УМНЫЕ СЕЛЕКТОРЫ ===== */
+@media (hover: hover) {
+  .service-card:hover {
+    transform: translateY(-6px);
+  }
+  
+  .file-item .file-name:hover {
+    text-decoration: underline;
+    color: var(--blue);
+  }
+  
+  .delete-file:hover,
+  .delete-request-btn:hover {
+    color: #c44;
+    background: rgba(0,0,0,0.05);
+  }
+}
+
+@media (hover: none) {
+  .service-card:active {
+    transform: scale(0.98);
+  }
+  
+  .btn-primary:active,
+  .btn-outline:active {
+    transform: scale(0.98);
+  }
+  
+  .file-item .file-name:active {
+    color: var(--blue);
+  }
+  
+  .delete-file:active {
+    color: #c44;
+  }
+}
+
+@supports (padding: max(0px)) {
+  .container {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}

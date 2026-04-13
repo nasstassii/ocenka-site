@@ -1,0 +1,18 @@
+:root {
+  --blue: #4A7A9E;
+  --blue-dark: #3D6482;
+  --blue-light: #7A9FBA;
+  --blue-bg: #EBF2F7;
+  --blue-bg-dark: #DDE8F0;
+  --graphite: #2D2A27;
+  --bg-card: #FFFFFF;
+  --text-dark: #2C2A28;
+  --text-muted: #6E6862;
+  --shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
+  --border: #E2E6EA;
+  --green: #4A9E6E;
+  --orange: #E8A04A;
+  --star-active: #F5A623;
+  --star-inactive: #CCCCCC;
+}

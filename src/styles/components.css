@@ -1,0 +1,640 @@
+/* ===== ГЛОБАЛЬНЫЕ СТИЛИ ДЛЯ ТЕКСТОВЫХ ПОЛЕЙ ===== */
+input, 
+textarea, 
+select,
+button,
+.btn-cabinet,
+.logout-btn,
+.back-link,
+.file-btn,
+.add-btn,
+.btn-save,
+.auth-form input,
+.request-modal input,
+.request-modal select,
+.request-modal textarea,
+.contact-form input,
+.contact-form textarea,
+.contact-form button {
+  font-family: 'Inter', sans-serif;
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+}
+
+/* ===== КНОПКИ ===== */
+.btn-primary {
+  background: var(--blue);
+  color: white;
+  padding: 12px 32px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: 0.2s;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+}
+
+.btn-primary:hover {
+  background: var(--blue-dark);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  border: 2px solid var(--blue);
+  color: var(--blue);
+  padding: 12px 28px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.2s;
+  margin-left: 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.btn-outline:hover {
+  background: var(--blue);
+  color: white;
+}
+
+.btn-cabinet {
+  background: var(--blue);
+  color: white !important;
+  padding: 8px 22px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: 0.2s;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  display: inline-block;
+  border: none;
+  white-space: nowrap;
+}
+
+.btn-cabinet:hover {
+  background: var(--blue-dark);
+}
+
+.btn-save, .add-btn {
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-save:hover, .add-btn:hover {
+  background: var(--blue-dark);
+}
+
+.btn-white {
+  background: white;
+  color: var(--blue) !important;
+}
+
+.doc-link-btn {
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.doc-link-btn:hover {
+  background: var(--blue-dark);
+}
+
+/* ===== НАВИГАЦИЯ ===== */
+nav {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 20px 0;
+}
+
+.logo a {
+  text-decoration: none;
+}
+
+.logo h2 {
+  font-size: 24px;
+  margin-bottom: 0;
+  color: var(--graphite);
+}
+
+.logo p {
+  font-size: 14px;
+  color: var(--blue);
+  letter-spacing: 1px;
+  font-family: 'Inter', sans-serif;
+  margin-top: 2px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--text-dark);
+  transition: 0.2s;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+}
+
+.nav-links a:hover {
+  color: var(--blue);
+}
+
+/* ===== ШАПКА КАБИНЕТА ===== */
+.cabinet-header {
+  background: white;
+  padding: 20px 0;
+  border-bottom: 2px solid var(--blue);
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.logo-cabinet a {
+  text-decoration: none;
+  color: var(--graphite);
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.logo-cabinet span {
+  font-size: 12px;
+  color: var(--blue);
+  display: block;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.user-email {
+  font-size: 13px;
+  color: var(--blue);
+  background: var(--blue-bg);
+  padding: 8px 16px;
+  border-radius: 30px;
+}
+
+.logout-btn, .back-link {
+  font-family: 'Inter', sans-serif;
+  color: var(--graphite);
+  text-decoration: none;
+  background: var(--blue-bg);
+  padding: 8px 20px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logout-btn:hover, .back-link:hover {
+  background: var(--blue);
+  color: white;
+  text-decoration: none;
+}
+
+/* ===== CTA БАННЕР ===== */
+.cta-banner {
+  padding: 50px 0;
+  background: var(--blue);
+  color: white;
+  text-align: center;
+}
+
+.cta-banner h3 {
+  font-size: 28px;
+  margin-bottom: 16px;
+  color: white;
+  font-family: 'Playfair Display', serif;
+}
+
+.cta-banner p {
+  margin-bottom: 24px;
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.cta-banner .btn-primary {
+  background: white;
+  color: var(--blue);
+  margin-top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cta-banner .btn-primary:hover {
+  background: var(--blue-bg);
+  transform: translateY(-2px);
+}
+
+/* ===== КОНТАКТЫ ===== */
+.contact {
+  padding: 60px 0 40px;
+  background: var(--graphite);
+  color: white;
+}
+
+.contact-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 50px;
+  align-items: flex-start;
+}
+
+.contact-info {
+  flex: 1.2;
+}
+
+.contact-info h2 {
+  color: white;
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.contact-info p {
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 24px 0;
+}
+
+.contact-detail {
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.contact-detail i {
+  width: 32px;
+  color: var(--blue-light);
+  font-size: 20px;
+}
+
+.contact-detail span {
+  color: white;
+}
+
+.contact-form {
+  flex: 0.8;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 12px 18px;
+  margin-bottom: 16px;
+  border: none;
+  border-radius: 30px;
+  background: var(--blue-bg);
+  font-size: 14px;
+}
+
+.contact-form textarea {
+  border-radius: 20px;
+  resize: vertical;
+}
+
+.contact-form button {
+  background: var(--blue);
+  border: none;
+  padding: 12px 32px;
+  border-radius: 30px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.contact-form button:hover {
+  background: var(--blue-dark);
+}
+
+/* Чекбокс в форме обратной связи */
+.contact-form .checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.contact-form .checkbox-wrapper input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--blue);
+}
+
+.contact-form .checkbox-wrapper label {
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.contact-form .checkbox-wrapper label a {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.contact-form .checkbox-wrapper label a:hover {
+  text-decoration: underline;
+}
+
+.feedback-result {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--green);
+}
+
+.privacy-link {
+  margin-top: 20px;
+}
+
+.privacy-link a {
+  color: var(--blue-light);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.privacy-link a:hover {
+  text-decoration: underline;
+}
+
+footer {
+  background: var(--graphite);
+  text-align: center;
+  padding: 25px 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ===== МОДАЛЬНЫЕ ОКНА ===== */
+.auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.auth-modal {
+  background: white;
+  border-radius: 28px;
+  width: 450px;
+  max-width: 90%;
+  padding: 32px;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+.request-modal {
+  max-width: 600px;
+  width: 90%;
+}
+
+.request-modal h3 {
+  margin-bottom: 16px;
+  color: var(--blue);
+}
+
+.request-modal input,
+.request-modal select,
+.request-modal textarea {
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-radius: 30px;
+  border: 1px solid var(--border);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  background: white;
+}
+
+.request-modal textarea {
+  border-radius: 20px;
+  resize: vertical;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 16px;
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 30px;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-buttons button:first-child {
+  background: var(--blue);
+  color: white;
+}
+
+.modal-buttons button:last-child {
+  background: var(--blue-bg);
+  color: var(--text-dark);
+  border: 1px solid var(--border);
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--border);
+}
+
+.auth-tab {
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.auth-tab.active {
+  color: var(--blue);
+  border-bottom: 2px solid var(--blue);
+  margin-bottom: -2px;
+}
+
+.auth-form {
+  display: none;
+}
+
+.auth-form.active {
+  display: block;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  border-radius: 30px;
+}
+
+.auth-form button {
+  width: 100%;
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.auth-error {
+  color: #c44;
+  font-size: 12px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.close-auth {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+}
+
+/* ===== ЧЕКБОКСЫ ===== */
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.checkbox-wrapper input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  margin: 0;
+  accent-color: var(--blue);
+}
+
+.checkbox-wrapper label {
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+  margin: 0;
+}
+
+.checkbox-wrapper label a {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+/* ===== ПОЛЯ ПАРОЛЯ ===== */
+.password-strength-wrapper {
+  margin-bottom: 16px;
+}
+
+.password-strength-wrapper input {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.password-strength {
+  font-size: 12px;
+}
+
+.password-strength.weak {
+  color: #c44;
+}
+
+.password-strength.medium {
+  color: #E8A04A;
+}
+
+.password-strength.strong {
+  color: #4A9E6E;
+}
