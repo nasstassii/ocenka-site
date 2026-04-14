@@ -1,4 +1,6 @@
-/* ПЕРЕМЕННЫЕ */
+/* ========================================
+   ПЕРЕМЕННЫЕ
+   ======================================== */
 :root {
   --blue: #4A7A9E;
   --blue-dark: #3D6482;
@@ -30,6 +32,7 @@ body {
   color: var(--text-dark);
   scroll-behavior: smooth;
   font-weight: 400;
+  font-size: 16px;
 }
 
 .container {
@@ -38,7 +41,6 @@ body {
   padding: 0 48px;
 }
 
-/* Заголовки */
 h1, h2, h3, h4, .logo {
   font-family: 'Playfair Display', serif;
   font-weight: 500;
@@ -46,25 +48,25 @@ h1, h2, h3, h4, .logo {
 }
 
 h1 {
-  font-size: 3.2rem;
+  font-size: 51px;
   line-height: 1.2;
   font-weight: 600;
 }
 
 h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+  font-size: 32px;
+  margin-bottom: 16px;
   font-weight: 500;
 }
 
 h3 {
-  font-size: 1.25rem;
+  font-size: 20px;
   font-weight: 500;
 }
 
 .section-title {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 48px;
 }
 
 .section-title h2 {
@@ -84,7 +86,6 @@ h3 {
   border-radius: 2px;
 }
 
-/* Кнопки */
 .btn-primary {
   background: var(--blue);
   color: white;
@@ -99,7 +100,7 @@ h3 {
   border: none;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
+  font-size: 14px;
 }
 
 .btn-primary:hover {
@@ -115,9 +116,9 @@ h3 {
   text-decoration: none;
   font-weight: 500;
   transition: 0.2s;
-  margin-left: 1rem;
+  margin-left: 16px;
   font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
+  font-size: 14px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -139,15 +140,15 @@ h3 {
   transition: 0.2s;
   text-decoration: none;
   font-weight: 500;
-  font-size: 0.85rem;
+  font-size: 14px;
   display: inline-block;
+  border: none;
 }
 
 .btn-cabinet:hover {
   background: var(--blue-dark);
 }
 
-/* Навигация */
 nav {
   background: white;
   border-bottom: 1px solid var(--border);
@@ -162,7 +163,7 @@ nav {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 16px;
   padding: 20px 0;
 }
 
@@ -171,13 +172,13 @@ nav {
 }
 
 .logo h2 {
-  font-size: 1.5rem;
+  font-size: 24px;
   margin-bottom: 0;
   color: var(--graphite);
 }
 
 .logo p {
-  font-size: 0.7rem;
+  font-size: 14px;
   color: var(--blue);
   letter-spacing: 1px;
   font-family: 'Inter', sans-serif;
@@ -186,7 +187,7 @@ nav {
 
 .nav-links {
   display: flex;
-  gap: 1.8rem;
+  gap: 28px;
   list-style: none;
   flex-wrap: wrap;
   align-items: center;
@@ -195,7 +196,7 @@ nav {
 .nav-links a {
   text-decoration: none;
   font-weight: 500;
-  font-size: 0.85rem;
+  font-size: 14px;
   color: var(--text-dark);
   transition: 0.2s;
   font-family: 'Inter', sans-serif;
@@ -205,7 +206,6 @@ nav {
   color: var(--blue);
 }
 
-/* Личный кабинет и админ-панель */
 .cabinet-header {
   background: white;
   padding: 20px 0;
@@ -217,19 +217,19 @@ nav {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 16px;
 }
 
 .logo-cabinet a {
   text-decoration: none;
   color: var(--graphite);
   font-family: 'Playfair Display', serif;
-  font-size: 1.4rem;
+  font-size: 22px;
   font-weight: 500;
 }
 
 .logo-cabinet span {
-  font-size: 0.7rem;
+  font-size: 12px;
   color: var(--blue);
   display: block;
   font-family: 'Inter', sans-serif;
@@ -238,12 +238,12 @@ nav {
 .user-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
 .user-email {
-  font-size: 0.8rem;
+  font-size: 13px;
   color: var(--blue);
   background: var(--blue-bg);
   padding: 8px 16px;
@@ -260,7 +260,7 @@ nav {
   border-radius: 30px;
   border: none;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 14px;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
@@ -277,13 +277,13 @@ nav {
 }
 
 .page-title {
-  margin-bottom: 2rem;
+  margin-bottom: 32px;
 }
 
 .page-title h1 {
   color: var(--blue);
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
+  font-size: 32px;
+  margin-bottom: 8px;
 }
 
 .page-title p {
@@ -293,10 +293,10 @@ nav {
 
 .cabinet-tabs {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 16px;
+  margin-bottom: 32px;
   border-bottom: 2px solid var(--border);
-  padding-bottom: 0.5rem;
+  padding-bottom: 8px;
   flex-wrap: wrap;
 }
 
@@ -308,7 +308,7 @@ nav {
   cursor: pointer;
   border-radius: 30px;
   font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
+  font-size: 14px;
   transition: 0.2s;
   color: var(--text-dark);
 }
@@ -321,7 +321,7 @@ nav {
 .cabinet-panel {
   background: white;
   border-radius: 24px;
-  padding: 2rem;
+  padding: 32px;
   display: none;
   border: 1px solid var(--border);
 }
@@ -334,35 +334,34 @@ nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 16px;
 }
 
 .panel-header h3 {
-  font-size: 1.25rem;
+  font-size: 20px;
   color: var(--blue);
 }
 
-/* Профиль */
 .profile-section {
   background: white;
   border-radius: 24px;
-  padding: 1.8rem;
-  margin-bottom: 2rem;
+  padding: 28px;
+  margin-bottom: 32px;
   border: 1px solid var(--border);
 }
 
 .profile-section h3 {
   color: var(--blue);
-  margin-bottom: 1rem;
-  font-size: 1.25rem;
+  margin-bottom: 16px;
+  font-size: 20px;
 }
 
 .profile-form {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 16px;
 }
 
 .profile-form input {
@@ -370,7 +369,7 @@ nav {
   border: 1px solid var(--border);
   border-radius: 30px;
   font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
+  font-size: 14px;
   flex: 1;
   min-width: 200px;
   background: white;
@@ -390,15 +389,14 @@ nav {
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 14px;
 }
 
-/* Заявки */
 .request-card {
   background: var(--blue-bg);
   border-radius: 20px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  padding: 24px;
+  margin-bottom: 24px;
   border: 1px solid var(--border);
 }
 
@@ -407,56 +405,101 @@ nav {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  margin-bottom: 0.8rem;
+  margin-bottom: 16px;
 }
 
 .request-object {
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 18px;
   color: var(--blue);
   font-family: 'Playfair Display', serif;
 }
 
+/* ===== СТАТУС ЗАЯВКИ ===== */
 .status {
   padding: 4px 12px;
   border-radius: 30px;
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 600;
   display: inline-block;
   font-family: 'Inter', sans-serif;
-  background: #FEF0D8;
+  background: transparent;
+  border: 1px solid;
+}
+
+.status[data-status="new"] {
+  border-color: #7A9FBA;
+  color: #2C5F8A;
+  background: #D6EAF8;
+}
+
+.status[data-status="work"] {
+  border-color: #E8A04A;
+  color: #C47A2A;
+  background: #FEF0E0;
+}
+
+.status[data-status="waiting_docs"] {
+  border-color: #F5D99B;
   color: #A66907;
-  border: 1px solid #F5D99B;
+  background: #FEF8E7;
+}
+
+.status[data-status="waiting_payment"] {
+  border-color: #E8A0A0;
+  color: #C44;
+  background: #FCE4EC;
+}
+
+.status[data-status="report_ready"] {
+  border-color: #4A9E6E;
+  color: #2E7D32;
+  background: #D9F0E3;
+}
+
+/* ===== КОММЕНТАРИЙ ОЦЕНЩИКА ===== */
+.admin-comment {
+  background: #F2F6FA;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin: 16px 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #2C5F8A;
+  border: none;
+}
+
+.admin-comment strong {
+  color: #4A7A9E;
 }
 
 .status-select {
-  padding: 4px 12px;
+  padding: 6px 12px;
   border-radius: 30px;
   border: 1px solid var(--border);
   font-family: 'Inter', sans-serif;
-  font-size: 0.8rem;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dark);
   background: white;
+  cursor: pointer;
+  outline: none;
+}
+
+.status-select:hover {
+  border-color: var(--blue);
 }
 
 .request-details {
-  margin-top: 1rem;
-  padding-top: 1rem;
+  margin-top: 16px;
+  padding-top: 16px;
   border-top: 1px solid var(--border);
 }
 
 .request-details p {
-  margin: 0.5rem 0;
-  font-size: 0.85rem;
+  margin: 8px 0;
+  font-size: 14px;
   font-family: 'Inter', sans-serif;
-}
-
-.admin-comment {
-  background: #FFF8E7;
-  padding: 0.8rem;
-  border-radius: 12px;
-  margin: 0.8rem 0;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.85rem;
 }
 
 .admin-comment-area {
@@ -464,32 +507,122 @@ nav {
   padding: 10px;
   border-radius: 16px;
   border: 1px solid var(--border);
-  margin: 0.5rem 0;
+  margin: 8px 0;
   font-family: 'Inter', sans-serif;
-  font-size: 0.85rem;
+  font-size: 14px;
   resize: vertical;
 }
 
-/* Файлы */
+/* ===== ФАЙЛЫ ===== */
 .file-section {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.8rem;
-  margin: 0.8rem 0;
+  gap: 10px;
+  margin: 8px 0;
   align-items: center;
+}
+
+.file-section span {
+  font-weight: 600;
+  color: var(--text-dark);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  min-width: 160px;
+}
+
+.file-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--blue-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 8px 4px 12px;
+  height: 32px;
+  width: auto;
+  max-width: 280px;
+}
+
+.file-item .file-name {
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  color: var(--text-dark);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.file-item .file-name:hover {
+  text-decoration: underline;
+  color: var(--blue);
+}
+
+.delete-file {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-file:hover {
+  color: #c44;
+  background: rgba(0,0,0,0.05);
+}
+
+.delete-request-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  font-size: 16px;
+  padding: 4px 8px;
+  border-radius: 50%;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-request-btn:hover {
+  color: #c44;
+  background: rgba(0,0,0,0.05);
 }
 
 .file-btn {
   background: var(--blue-bg);
   border: 1px solid var(--border);
-  padding: 6px 16px;
-  border-radius: 30px;
-  font-size: 0.75rem;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 13px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 6px;
   font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  color: var(--text-dark);
+  transition: all 0.2s;
+  height: 32px;
+}
+
+.file-btn:hover {
+  background: var(--blue);
+  color: white;
+  border-color: var(--blue);
+}
+
+.file-btn:hover i {
+  color: white;
 }
 
 .add-btn {
@@ -501,19 +634,46 @@ nav {
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   font-weight: 600;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* Редактирование контента */
+.add-btn:hover {
+  background: var(--blue-dark);
+}
+
+.btn-save {
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-save:hover {
+  background: var(--blue-dark);
+}
+
 .content-editor {
   background: var(--blue-bg);
   border-radius: 16px;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  padding: 16px;
+  margin-bottom: 16px;
 }
 
 .content-editor h4 {
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
+  margin-bottom: 8px;
+  font-size: 16px;
   color: var(--blue);
 }
 
@@ -522,9 +682,9 @@ nav {
   padding: 12px;
   border-radius: 16px;
   border: 1px solid var(--border);
-  margin: 0.5rem 0;
+  margin: 8px 0;
   font-family: 'Inter', sans-serif;
-  font-size: 0.85rem;
+  font-size: 14px;
   resize: vertical;
 }
 
@@ -537,10 +697,9 @@ nav {
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 13px;
 }
 
-/* Отзывы */
 .star-rating {
   display: flex;
   gap: 8px;
@@ -549,7 +708,7 @@ nav {
 }
 
 .star-rating i {
-  font-size: 1.2rem;
+  font-size: 20px;
   cursor: pointer;
   color: var(--star-inactive);
   transition: color 0.2s;
@@ -560,16 +719,6 @@ nav {
   color: var(--star-active);
 }
 
-/* Договор */
-.contract-img {
-  max-width: 100%;
-  margin-top: 1rem;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  cursor: pointer;
-}
-
-/* Герой секция */
 .hero {
   padding: 60px 0 70px;
   background: var(--blue-bg);
@@ -607,14 +756,14 @@ nav {
   color: white;
   padding: 5px 18px;
   border-radius: 30px;
-  font-size: 0.7rem;
+  font-size: 12px;
   font-weight: 600;
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px;
   font-family: 'Inter', sans-serif;
 }
 
 .hero-content h1 {
-  margin-bottom: 1.8rem;
+  margin-bottom: 28px;
 }
 
 .hero-content h1 span {
@@ -623,15 +772,14 @@ nav {
 }
 
 .hero-desc {
-  font-size: 1rem;
+  font-size: 16px;
   color: var(--text-muted);
   line-height: 1.5;
-  margin-bottom: 2rem;
+  margin-bottom: 32px;
   max-width: 90%;
   font-family: 'Inter', sans-serif;
 }
 
-/* Почему выбирают меня */
 .why-me {
   padding: 50px 0;
   background: var(--blue);
@@ -650,9 +798,9 @@ nav {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 32px;
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 32px;
 }
 
 .why-item {
@@ -661,20 +809,19 @@ nav {
 }
 
 .why-number {
-  font-size: 2.5rem;
+  font-size: 40px;
   font-weight: 700;
   color: white;
   font-family: 'Playfair Display', serif;
 }
 
 .why-label {
-  font-size: 0.85rem;
+  font-size: 14px;
   color: rgba(255, 255, 255, 0.9);
-  margin-top: 0.3rem;
+  margin-top: 5px;
   font-family: 'Inter', sans-serif;
 }
 
-/* Услуги на главной */
 .services {
   padding: 70px 0;
   background: var(--blue-bg);
@@ -683,7 +830,7 @@ nav {
 .services-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.8rem;
+  gap: 28px;
 }
 
 .service-card {
@@ -708,19 +855,18 @@ nav {
 }
 
 .service-card h3 {
-  padding: 1.2rem 1.2rem 0.3rem;
-  font-size: 1.1rem;
+  padding: 20px 20px 5px;
+  font-size: 18px;
   font-family: 'Playfair Display', serif;
 }
 
 .service-card p {
-  padding: 0 1.2rem 1.2rem;
+  padding: 0 20px 20px;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: 14px;
   font-family: 'Inter', sans-serif;
 }
 
-/* Квалификация на главной */
 .qualifications {
   padding: 70px 0;
   background: var(--bg-card);
@@ -739,7 +885,7 @@ nav {
 }
 
 .qual-left h3 {
-  margin: 1.5rem 0 0.5rem;
+  margin: 24px 0 8px;
   color: var(--blue);
   font-family: 'Playfair Display', serif;
 }
@@ -748,7 +894,7 @@ nav {
   font-family: 'Inter', sans-serif;
   color: var(--text-muted);
   line-height: 1.5;
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
 }
 
 .qual-left ul {
@@ -756,8 +902,8 @@ nav {
 }
 
 .qual-left li {
-  margin: 0.6rem 0;
-  padding-left: 1.5rem;
+  margin: 10px 0;
+  padding-left: 24px;
   position: relative;
   font-family: 'Inter', sans-serif;
   color: var(--text-muted);
@@ -766,7 +912,7 @@ nav {
 .qual-left li:before {
   content: '•';
   color: var(--blue);
-  font-size: 1.2rem;
+  font-size: 20px;
   position: absolute;
   left: 0;
 }
@@ -775,22 +921,22 @@ nav {
   flex: 0.8;
   background: var(--blue-bg);
   border-radius: 20px;
-  padding: 2rem 1.5rem;
+  padding: 32px 24px;
   text-align: center;
 }
 
 .doc-badge {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  margin: 1rem 0;
-  padding: 0.8rem;
+  gap: 12px;
+  margin: 16px 0;
+  padding: 12px;
   background: white;
   border-radius: 12px;
 }
 
 .doc-badge i {
-  font-size: 1.5rem;
+  font-size: 24px;
   color: var(--blue);
   width: 32px;
   text-align: center;
@@ -802,7 +948,6 @@ nav {
   text-align: left;
 }
 
-/* Отзывы карусель */
 .reviews {
   padding: 70px 0;
   background: var(--blue-bg);
@@ -820,36 +965,36 @@ nav {
 .reviews-track {
   display: flex;
   transition: transform 0.4s ease-in-out;
-  gap: 1.8rem;
+  gap: 28px;
 }
 
 .review-card {
-  flex: 0 0 calc(33.333% - 1.2rem);
+  flex: 0 0 calc(33.333% - 20px);
   background: var(--bg-card);
   border-radius: 20px;
-  padding: 1.8rem;
+  padding: 28px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
 }
 
 .review-card .stars {
   color: var(--star-active);
-  font-size: 1rem;
-  margin-bottom: 0.8rem;
+  font-size: 16px;
+  margin-bottom: 12px;
 }
 
 .review-text {
   font-style: italic;
   color: var(--text-muted);
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
   line-height: 1.5;
-  font-size: 0.9rem;
+  font-size: 14px;
 }
 
 .review-author {
   font-weight: 600;
   color: var(--blue);
-  font-size: 0.85rem;
+  font-size: 14px;
 }
 
 .review-slider-btn {
@@ -868,7 +1013,7 @@ nav {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: 20px;
 }
 
 .review-slider-btn:hover {
@@ -883,7 +1028,6 @@ nav {
   right: 0;
 }
 
-/* CTA баннер */
 .cta-banner {
   padding: 50px 0;
   background: var(--blue);
@@ -892,8 +1036,8 @@ nav {
 }
 
 .cta-banner h3 {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
+  font-size: 28px;
+  margin-bottom: 16px;
   color: white;
   font-family: 'Playfair Display', serif;
 }
@@ -901,14 +1045,13 @@ nav {
 .cta-banner .btn-primary {
   background: white;
   color: var(--blue);
-  margin-top: 1rem;
+  margin-top: 16px;
 }
 
 .cta-banner .btn-primary:hover {
   background: var(--blue-bg);
 }
 
-/* Контакты */
 .contact {
   padding: 60px 0 40px;
   background: var(--graphite);
@@ -923,33 +1066,33 @@ nav {
 }
 
 .contact-info {
-  flex: 1;
+  flex: 1.2;
   margin-top: -8px;
 }
 
 .contact-info h2 {
   color: white;
-  font-size: 1.8rem;
-  margin-bottom: 0.5rem;
+  font-size: 28px;
+  margin-bottom: 8px;
 }
 
 .contact-info p {
   color: rgba(255, 255, 255, 0.7);
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 24px 0;
   font-family: 'Inter', sans-serif;
 }
 
 .contact-detail {
-  margin: 0.6rem 0;
+  margin: 10px 0;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 16px;
 }
 
 .contact-detail i {
   width: 32px;
   color: var(--blue-light);
-  font-size: 1.2rem;
+  font-size: 20px;
 }
 
 .contact-detail span {
@@ -958,22 +1101,21 @@ nav {
 }
 
 .contact-detail.hours {
-  margin-top: 0.6rem;
+  margin-top: 10px;
 }
 
 .contact-form {
-  flex: 1;
+  flex: 0.8;
 }
 
 .contact-form input,
 .contact-form textarea {
   width: 100%;
   padding: 12px 18px;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
   border: none;
   border-radius: 30px;
   font-family: 'Inter', sans-serif;
-  background: var(--blue-bg);
 }
 
 .contact-form button {
@@ -996,7 +1138,6 @@ nav {
   background: var(--blue-dark);
 }
 
-/* Страница услуг */
 .page-hero {
   background: var(--blue);
   color: white;
@@ -1006,15 +1147,15 @@ nav {
 
 .page-hero h1 {
   color: white;
-  font-size: 2.2rem;
+  font-size: 35px;
 }
 
 .page-hero p {
   color: rgba(255, 255, 255, 0.8);
   max-width: 700px;
   margin: 0 auto;
-  font-size: 1rem;
-  margin-top: 0.8rem;
+  font-size: 16px;
+  margin-top: 12px;
 }
 
 .price-section {
@@ -1025,23 +1166,23 @@ nav {
 .intro-text {
   background: var(--bg-card);
   border-radius: 20px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
+  padding: 24px;
+  margin-bottom: 32px;
   border: 1px solid var(--border);
 }
 
 .intro-text p {
-  margin-bottom: 0.8rem;
+  margin-bottom: 12px;
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: 15px;
   line-height: 1.6;
 }
 
 .price-card {
   background: var(--bg-card);
   border-radius: 20px;
-  padding: 1.8rem;
-  margin-bottom: 2rem;
+  padding: 28px;
+  margin-bottom: 32px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
 }
@@ -1049,9 +1190,9 @@ nav {
 .price-card h3 {
   color: var(--blue);
   border-left: 3px solid var(--blue);
-  padding-left: 1rem;
-  margin-bottom: 1.5rem;
-  font-size: 1.3rem;
+  padding-left: 16px;
+  margin-bottom: 24px;
+  font-size: 20px;
 }
 
 .price-table {
@@ -1064,14 +1205,14 @@ nav {
   padding: 12px;
   background: var(--blue-bg-dark);
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 14px;
   border-bottom: 1px solid var(--border);
 }
 
 .price-table td {
   padding: 12px;
   border-bottom: 1px solid var(--border);
-  font-size: 0.9rem;
+  font-size: 14px;
   vertical-align: top;
   background: var(--bg-card);
 }
@@ -1087,13 +1228,12 @@ nav {
 }
 
 .price-note {
-  font-size: 0.75rem;
+  font-size: 12px;
   color: var(--text-muted);
-  margin-top: 1rem;
-  padding-top: 1rem;
+  margin-top: 16px;
+  padding-top: 16px;
 }
 
-/* Документы для оценки */
 .docs-section {
   padding: 60px 0;
   background: var(--bg-card);
@@ -1102,20 +1242,20 @@ nav {
 .docs-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
+  gap: 32px;
 }
 
 .doc-card {
   background: var(--blue-bg);
   border-radius: 20px;
-  padding: 1.5rem;
+  padding: 24px;
   border: 1px solid var(--border);
 }
 
 .doc-card h4 {
   color: var(--blue);
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
+  margin-bottom: 16px;
+  font-size: 18px;
   font-weight: 500;
 }
 
@@ -1126,10 +1266,10 @@ nav {
 }
 
 .doc-card li {
-  margin: 0.6rem 0;
-  padding-left: 1.5rem;
+  margin: 10px 0;
+  padding-left: 24px;
   position: relative;
-  font-size: 0.85rem;
+  font-size: 14px;
   line-height: 1.5;
 }
 
@@ -1140,7 +1280,6 @@ nav {
   left: 0;
 }
 
-/* Страница квалификации */
 .welcome-section {
   padding: 50px 0;
   background: var(--blue-bg);
@@ -1149,52 +1288,52 @@ nav {
 .welcome-card {
   background: var(--bg-card);
   border-radius: 24px;
-  padding: 2rem;
+  padding: 32px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
 }
 
 .welcome-card p {
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: 16px;
   line-height: 1.6;
 }
 
 .welcome-card ul {
-  margin: 1rem 0 1rem 1.5rem;
+  margin: 16px 0 16px 24px;
   color: var(--text-muted);
   line-height: 1.6;
 }
 
 .welcome-card li {
-  margin: 0.5rem 0;
+  margin: 8px 0;
 }
 
 .docs-block {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  margin-top: 2rem;
+  gap: 12px;
+  margin-top: 32px;
 }
 
 .doc-simple {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.8rem 1rem;
+  padding: 12px 16px;
   background: var(--blue-bg);
   border-radius: 12px;
   border: 1px solid var(--border);
 }
 
 .doc-name {
-  font-size: 0.85rem;
+  font-size: 14px;
   color: var(--text-dark);
 }
 
 .doc-link {
-  font-size: 0.75rem;
+  font-size: 12px;
   color: var(--blue);
   text-decoration: none;
   font-weight: 500;
@@ -1204,7 +1343,6 @@ nav {
   text-decoration: underline;
 }
 
-/* Модальное окно */
 .auth-overlay {
   position: fixed;
   top: 0;
@@ -1223,15 +1361,15 @@ nav {
   border-radius: 28px;
   width: 450px;
   max-width: 90%;
-  padding: 2rem;
+  padding: 32px;
   box-shadow: var(--shadow);
   position: relative;
 }
 
 .auth-tabs {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 16px;
+  margin-bottom: 24px;
   border-bottom: 2px solid var(--border);
 }
 
@@ -1239,7 +1377,7 @@ nav {
   background: none;
   border: none;
   padding: 10px 20px;
-  font-size: 1rem;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   color: var(--text-muted);
@@ -1262,7 +1400,7 @@ nav {
 .auth-form input {
   width: 100%;
   padding: 12px 16px;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
   border: 1px solid var(--border);
   border-radius: 30px;
   font-family: 'Inter', sans-serif;
@@ -1277,7 +1415,7 @@ nav {
   border-radius: 30px;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 0.5rem;
+  margin-top: 8px;
 }
 
 .auth-form button:hover {
@@ -1286,8 +1424,8 @@ nav {
 
 .auth-error {
   color: #c44;
-  font-size: 0.75rem;
-  margin-top: 0.5rem;
+  font-size: 12px;
+  margin-top: 8px;
   text-align: center;
 }
 
@@ -1295,24 +1433,95 @@ nav {
   position: absolute;
   top: 15px;
   right: 20px;
-  font-size: 1.5rem;
+  font-size: 24px;
   cursor: pointer;
   color: var(--text-muted);
   background: none;
   border: none;
 }
 
-/* Footer */
 footer {
   background: var(--graphite);
   text-align: center;
   padding: 25px 0;
   color: rgba(255, 255, 255, 0.5);
-  font-size: 0.7rem;
+  font-size: 12px;
   font-family: 'Inter', sans-serif;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 footer p {
   margin-top: 0;
+}
+
+/* Профиль - компактная строка */
+.profile-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.profile-form-row .name-input {
+    flex: 2;
+    min-width: 220px;
+    padding: 10px 16px;
+    border-radius: 30px;
+    border: 1px solid var(--border);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+}
+
+.profile-form-row .phone-input {
+    width: 162px;
+    padding: 10px 16px;
+    border-radius: 30px;
+    border: 1px solid var(--border);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    text-align: left;
+}
+
+.profile-form-row .btn-save-profile {
+    background: var(--blue);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.profile-form-row .btn-change-password {
+    background: none;
+    border: none;
+    color: var(--blue);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.profile-form-row .btn-change-password-cancel {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
 }

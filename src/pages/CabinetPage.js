@@ -1,32 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import RequestModal from '../components/RequestModal';
 
 function CabinetPage() {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('requests');
   const [profileName, setProfileName] = useState('');
-  const [profileEmail, setProfileEmail] = useState('');
   const [profilePhone, setProfilePhone] = useState('');
   const [reviewText, setReviewText] = useState('');
   const [selectedRating, setSelectedRating] = useState(0);
   const [reviewResult, setReviewResult] = useState('');
-  const [emailError, setEmailError] = useState('');
+  const [requests, setRequests] = useState([]);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [uploadingId, setUploadingId] = useState(null);
+  const [uploadingType, setUploadingType] = useState(null);
+  const [files, setFiles] = useState({});
+  
+  // Состояния для смены пароля
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  
   const navigate = useNavigate();
-
-  // ОДНА заявка для клиента
-  const [requests, setRequests] = useState([
-    { 
-      id: 1, 
-      object: 'Торговый центр "Заря"', 
-      date: '2025-04-08', 
-      customer: 'Физическое лицо', 
-      type: 'нежилое помещение/здание', 
-      purpose: 'для суда', 
-      desc: 'Оценка для судебного разбирательства', 
-      status: 'waiting_docs', 
-      adminComment: 'Необходимо предоставить выписку из ЕГРН и технический паспорт' 
-    }
-  ]);
 
   useEffect(() => {
     const userData = sessionStorage.getItem('cabinet_user');
@@ -36,67 +36,135 @@ function CabinetPage() {
     }
     const parsedUser = JSON.parse(userData);
     setUser(parsedUser);
-    setProfileName(parsedUser.name || '');
-    setProfileEmail(parsedUser.email || '');
-    
-    // Загружаем телефон из localStorage
-    const savedPhone = localStorage.getItem(`user_phone_${parsedUser.email}`);
-    setProfilePhone(savedPhone || '');
+    setProfileName(parsedUser.fio || parsedUser.name || '');
+    setProfilePhone(parsedUser.phone || '');
+    loadRequests(parsedUser.id);
   }, [navigate]);
 
-  // Валидация email
-  const validateEmail = (email) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
-
-  // Форматирование телефона при вводе (маска)
-  const handlePhoneChange = (e) => {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.length > 11) value = value.slice(0, 11);
-    let formatted = '';
-    if (value.length > 0) formatted = '+7';
-    if (value.length > 1) formatted = '+7 (' + value.slice(1, 4);
-    if (value.length > 4) formatted = '+7 (' + value.slice(1, 4) + ') ' + value.slice(4, 7);
-    if (value.length > 7) formatted = '+7 (' + value.slice(1, 4) + ') ' + value.slice(4, 7) + '-' + value.slice(7, 9);
-    if (value.length > 9) formatted = '+7 (' + value.slice(1, 4) + ') ' + value.slice(4, 7) + '-' + value.slice(7, 9) + '-' + value.slice(9, 11);
-    setProfilePhone(formatted);
-  };
-
-  // Валидация email при вводе
-  const handleEmailChange = (e) => {
-    const email = e.target.value;
-    setProfileEmail(email);
-    if (email && !validateEmail(email)) {
-      setEmailError('Введите корректный email (пример: name@domain.ru)');
-    } else {
-      setEmailError('');
+  const loadRequests = async (userId) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`http://localhost:5000/api/requests/user/${userId}`);
+      const data = await response.json();
+      setRequests(Array.isArray(data) ? data : []);
+      
+      for (const req of data) {
+        await loadFiles(req.id_req);
+      }
+    } catch (err) {
+      console.error('Ошибка загрузки заявок:', err);
+      setRequests([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const saveProfile = () => {
-    if (!validateEmail(profileEmail)) {
-      setEmailError('Введите корректный email');
+  const loadFiles = async (requestId) => {
+    try {
+      const types = ['client_doc', 'contract', 'contract_signed', 'report'];
+      const filesData = {};
+      
+      for (const type of types) {
+        const response = await fetch(`http://localhost:5000/api/upload/${requestId}/${type}`);
+        const data = await response.json();
+        filesData[type] = Array.isArray(data) ? data : [];
+      }
+      
+      setFiles(prev => ({ ...prev, [requestId]: filesData }));
+    } catch (err) {
+      console.error('Ошибка загрузки файлов:', err);
+    }
+  };
+
+  const saveProfile = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/update', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: user.id, fio: profileName, phone: profilePhone })
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('Профиль сохранён');
+        const updatedUser = { ...user, fio: profileName, phone: profilePhone, name: profileName };
+        sessionStorage.setItem('cabinet_user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+      } else {
+        alert(data.error || 'Ошибка сохранения');
+      }
+    } catch (err) {
+      alert('Ошибка подключения к серверу');
+    }
+  };
+
+  // Смена пароля с проверкой сложности
+  const changePassword = async () => {
+    setPasswordError('');
+    setPasswordSuccess('');
+    
+    if (!oldPassword) {
+      setPasswordError('Введите текущий пароль');
+      return;
+    }
+    if (!newPassword) {
+      setPasswordError('Введите новый пароль');
       return;
     }
     
-    if (user) {
-      // Обновляем имя и email пользователя
-      const updatedUser = { ...user, name: profileName, email: profileEmail };
-      sessionStorage.setItem('cabinet_user', JSON.stringify(updatedUser));
+    // Проверка сложности нового пароля
+    if (newPassword.length < 8) {
+      setPasswordError('Пароль должен быть не менее 8 символов');
+      return;
+    }
+    if (!newPassword.match(/[a-z]/)) {
+      setPasswordError('Пароль должен содержать строчные буквы (a-z)');
+      return;
+    }
+    if (!newPassword.match(/[A-Z]/)) {
+      setPasswordError('Пароль должен содержать заглавные буквы (A-Z)');
+      return;
+    }
+    if (!newPassword.match(/[0-9]/)) {
+      setPasswordError('Пароль должен содержать цифры (0-9)');
+      return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Новый пароль и подтверждение не совпадают');
+      return;
+    }
+    
+    setIsChangingPassword(true);
+    
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          oldPassword: oldPassword,
+          newPassword: newPassword
+        })
+      });
       
-      // Обновляем в списке пользователей
-      const users = JSON.parse(localStorage.getItem('bakalenko_users') || '[]');
-      const userIndex = users.findIndex(u => u.email === user.email);
-      if (userIndex !== -1) {
-        users[userIndex].name = profileName;
-        users[userIndex].email = profileEmail;
-        localStorage.setItem('bakalenko_users', JSON.stringify(users));
+      const data = await response.json();
+      
+      if (data.success) {
+        setPasswordSuccess('Пароль успешно изменён');
+        setOldPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setTimeout(() => {
+          setShowPasswordForm(false);
+          setPasswordSuccess('');
+        }, 2000);
+      } else {
+        setPasswordError(data.error || 'Ошибка смены пароля');
       }
-      
-      localStorage.setItem(`user_phone_${profileEmail}`, profilePhone);
-      alert('Профиль сохранён');
-      setUser(updatedUser);
+    } catch (err) {
+      setPasswordError('Ошибка подключения к серверу');
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
@@ -105,28 +173,133 @@ function CabinetPage() {
     navigate('/');
   };
 
-  const submitReview = () => {
+  const submitReview = async () => {
     if (!reviewText.trim()) {
       setReviewResult('Напишите текст отзыва');
       return;
     }
-    const savedReviews = localStorage.getItem('site_reviews');
-    const reviews = savedReviews ? JSON.parse(savedReviews) : [];
-    reviews.unshift({
-      author: profileName,
-      text: reviewText,
-      rating: selectedRating || 5,
-      date: new Date().toISOString()
-    });
-    localStorage.setItem('site_reviews', JSON.stringify(reviews.slice(0, 10)));
-    setReviewResult('Спасибо за ваш отзыв!');
-    setReviewText('');
-    setSelectedRating(0);
-    setTimeout(() => setReviewResult(''), 3000);
+    try {
+      const response = await fetch('http://localhost:5000/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ users_id_user: user.id, text: reviewText, rating: selectedRating || 5 })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setReviewResult('Спасибо за ваш отзыв!');
+        setReviewText('');
+        setSelectedRating(0);
+        setTimeout(() => setReviewResult(''), 3000);
+      } else {
+        setReviewResult('Ошибка при отправке отзыва');
+      }
+    } catch (err) {
+      setReviewResult('Ошибка подключения к серверу');
+    }
   };
 
-  const uploadDoc = (id) => {
-    alert(`Функция загрузки документа для заявки №${id}`);
+  const uploadDocument = async (requestId, file, type) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('uploaded_by', 'client');
+
+    setUploadingId(requestId);
+    setUploadingType(type);
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/upload/${requestId}/${type}`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('Файл успешно загружен');
+        await loadFiles(requestId);
+      } else {
+        alert('Ошибка загрузки файла');
+      }
+    } catch (err) {
+      console.error('Ошибка:', err);
+      alert('Ошибка подключения к серверу');
+    } finally {
+      setUploadingId(null);
+      setUploadingType(null);
+    }
+  };
+
+  const deleteFile = async (fileId, requestId) => {
+    if (window.confirm('Удалить этот файл?')) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/upload/${fileId}`, {
+          method: 'DELETE'
+        });
+        const data = await response.json();
+        if (data.success) {
+          alert('Файл удалён');
+          await loadFiles(requestId);
+        } else {
+          alert('Ошибка удаления файла');
+        }
+      } catch (err) {
+        alert('Ошибка подключения к серверу');
+      }
+    }
+  };
+
+  const deleteRequest = async (id) => {
+    if (window.confirm('Вы уверены? Заявка и все файлы будут удалены безвозвратно.')) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/requests/${id}`, {
+          method: 'DELETE'
+        });
+        const data = await response.json();
+        if (data.success) {
+          alert('Заявка удалена');
+          loadRequests(user.id);
+        } else {
+          alert('Ошибка удаления');
+        }
+      } catch (err) {
+        alert('Ошибка подключения к серверу');
+      }
+    }
+  };
+
+  const handleFileSelect = (requestId, type) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,.jpg,.jpeg,.png';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (['pdf', 'jpg', 'jpeg', 'png'].includes(ext)) {
+          uploadDocument(requestId, file, type);
+        } else {
+          alert('Допустимые форматы: PDF, JPG, PNG');
+        }
+      }
+    };
+    input.click();
+  };
+
+  const downloadFile = async (fileId, fileName) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/upload/download/${fileId}`);
+      if (!response.ok) throw new Error('Ошибка загрузки файла');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Ошибка скачивания:', error);
+      alert('Не удалось скачать файл');
+    }
   };
 
   const getStatusText = (status) => {
@@ -135,7 +308,7 @@ function CabinetPage() {
       work: 'В работе',
       waiting_docs: 'Ожидает документов',
       waiting_payment: 'Ожидает оплаты',
-      report_ready: 'Отчет загружен'
+      report_ready: 'Завершено'
     };
     return map[status] || status;
   };
@@ -152,8 +325,12 @@ function CabinetPage() {
           </div>
           <div className="user-info">
             <span className="user-email">{user.email}</span>
-            <button className="logout-btn" onClick={handleLogout}><i className="fas fa-sign-out-alt"></i> Выйти</button>
-            <a href="/" className="back-link"><i className="fas fa-arrow-left"></i> На сайт</a>
+            <button className="logout-btn" onClick={handleLogout}>
+              <i className="fas fa-sign-out-alt"></i> Выйти
+            </button>
+            <a href="/" className="back-link">
+              <i className="fas fa-arrow-left"></i> На сайт
+            </a>
           </div>
         </div>
       </div>
@@ -163,109 +340,291 @@ function CabinetPage() {
           <div className="page-title">
             <h1>Личный кабинет</h1>
           </div>
-          
+
           <div className="profile-section">
-            <h3>Редактирование профиля</h3>
-            <div className="profile-form">
-              <input 
-                type="text" 
-                value={profileName} 
-                onChange={(e) => setProfileName(e.target.value)} 
-                placeholder="Ваше ФИО" 
-              />
-              <input 
-                type="email" 
-                value={profileEmail} 
-                onChange={handleEmailChange}
-                placeholder="Email" 
-                style={{ borderColor: emailError ? '#c44' : 'var(--border)' }}
-              />
-              {emailError && <span style={{ color: '#c44', fontSize: '0.7rem', marginTop: '-0.5rem' }}>{emailError}</span>}
-              <input 
-                type="tel" 
-                value={profilePhone} 
-                onChange={handlePhoneChange}
-                placeholder="+7 (___) ___-__-__" 
-              />
-              <button onClick={saveProfile}>Сохранить изменения</button>
-            </div>
-          </div>
-          
+  <h3>Редактирование профиля</h3>
+  <div className="profile-form-row">
+    <input
+      type="text"
+      className="name-input"
+      value={profileName}
+      onChange={(e) => setProfileName(e.target.value)}
+      placeholder="Ваше ФИО"
+    />
+    <input
+      type="tel"
+      className="phone-input"
+      value={profilePhone}
+      onChange={(e) => setProfilePhone(e.target.value)}
+      placeholder="+7 (___) ___-__-__"
+    />
+    <button onClick={saveProfile} className="btn-save-profile">
+      Сохранить изменения
+    </button>
+    
+    {!showPasswordForm ? (
+      <button onClick={() => setShowPasswordForm(true)} className="btn-change-password">
+        <i className="fas fa-key"></i> Сменить пароль
+      </button>
+    ) : (
+      <button onClick={() => setShowPasswordForm(false)} className="btn-change-password-cancel">
+        <i className="fas fa-times"></i> Отмена
+      </button>
+    )}
+  </div>
+
+  {showPasswordForm && (
+    <div className="password-change-form">
+      <div className="password-change-row">
+        <input
+          type="password"
+          className="password-input"
+          value={oldPassword}
+          onChange={(e) => setOldPassword(e.target.value)}
+          placeholder="Текущий пароль"
+          disabled={isChangingPassword}
+        />
+        <input
+          type="password"
+          className="password-input"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          placeholder="Новый пароль"
+          disabled={isChangingPassword}
+        />
+        <input
+          type="password"
+          className="password-input-confirm"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="Подтвердите"
+          disabled={isChangingPassword}
+        />
+        <button onClick={changePassword} className="btn-save-password" disabled={isChangingPassword}>
+          {isChangingPassword ? '...' : 'Сохранить'}
+        </button>
+      </div>
+      {passwordError && <div className="password-error">{passwordError}</div>}
+      {passwordSuccess && <div className="password-success">{passwordSuccess}</div>}
+    </div>
+  )}
+</div>
+
           <div className="cabinet-tabs">
-            <button className={`tab-btn ${activeTab === 'requests' ? 'active' : ''}`} onClick={() => setActiveTab('requests')}>Мои заявки</button>
-            <button className={`tab-btn ${activeTab === 'review' ? 'active' : ''}`} onClick={() => setActiveTab('review')}>Оставить отзыв</button>
-            <button className={`tab-btn ${activeTab === 'contract' ? 'active' : ''}`} onClick={() => setActiveTab('contract')}>Договор</button>
+            <button
+              className={`tab-btn ${activeTab === 'requests' ? 'active' : ''}`}
+              onClick={() => setActiveTab('requests')}
+            >
+              Мои заявки
+            </button>
+            <button
+              className={`tab-btn ${activeTab === 'review' ? 'active' : ''}`}
+              onClick={() => setActiveTab('review')}
+            >
+              Оставить отзыв
+            </button>
+            <button
+              className={`tab-btn ${activeTab === 'contract' ? 'active' : ''}`}
+              onClick={() => setActiveTab('contract')}
+            >
+              Договор
+            </button>
           </div>
-          
+
           <div className={`cabinet-panel ${activeTab === 'requests' ? 'active' : ''}`}>
             <div className="panel-header">
               <h3>Мои заявки</h3>
-              <button className="add-btn">+ Новая заявка</button>
+              <button className="add-btn" onClick={() => setIsRequestModalOpen(true)}>
+                + Новая заявка
+              </button>
             </div>
-            {requests.map(req => (
-              <div key={req.id} className="request-card">
-                <div className="request-header">
-                  <span className="request-object">{req.object}</span>
-                  <span className="status">{getStatusText(req.status)}</span>
-                </div>
-                <div className="request-details">
-                  <p><strong>Дата:</strong> {req.date}</p>
-                  <p><strong>Заказчик:</strong> {req.customer}</p>
-                  <p><strong>Объект оценки:</strong> {req.type}</p>
-                  <p><strong>Ограничения:</strong> Нет</p>
-                  <p><strong>Цель оценки:</strong> {req.purpose}</p>
-                  <p><strong>Описание:</strong> {req.desc}</p>
-                  <div className="admin-comment">
-                    <i className="fas fa-comment-dots"></i> <strong>Комментарий оценщика:</strong> {req.adminComment}
-                  </div>
-                  <div className="file-section">
-                    <span>Мои документы:</span>
-                    <button className="file-btn" onClick={() => uploadDoc(req.id)}>
-                      <i className="fas fa-upload"></i> Загрузить документ
-                    </button>
-                  </div>
-                </div>
+            {isLoading ? (
+              <div style={{ textAlign: 'center', padding: '20px' }}>Загрузка...</div>
+            ) : requests.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '20px', color: '#B8AFA0' }}>
+                У вас пока нет заявок.
               </div>
-            ))}
+            ) : (
+              requests.map(req => (
+                <div key={req.id_req} className="request-card">
+                  <div className="request-header">
+                    <span className="request-object">{req.name}</span>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <span className="status" data-status={req.status}>
+                        {getStatusText(req.status)}
+                      </span>
+                      <button
+                        onClick={() => deleteRequest(req.id_req)}
+                        className="delete-request-btn"
+                        title="Удалить заявку"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                  <div className="request-details">
+                    <p><strong>Дата:</strong> {new Date(req.created_at).toLocaleDateString()}</p>
+                    <p><strong>Заказчик:</strong> {req.client_type}</p>
+                    <p><strong>Объект оценки:</strong> {req.project_type}</p>
+                    <p><strong>Ограничения:</strong> {req.has_restrictions ? 'Да' : 'Нет'}</p>
+                    <p><strong>Цель оценки:</strong> {req.purpose}</p>
+                    <p><strong>Описание:</strong> {req.description || '—'}</p>
+                    {req.admin_comment && (
+                      <div className="admin-comment">
+                        <strong>Комментарий оценщика:</strong> {req.admin_comment}
+                      </div>
+                    )}
+
+                    <div className="file-section">
+                      <span>Мои документы:</span>
+                      {files[req.id_req]?.client_doc?.map((file) => (
+                        <div key={file.id_doc} className="file-item">
+                          <span
+                            className="file-name"
+                            onClick={() => downloadFile(file.id_doc, file.file_name)}
+                          >
+                            {file.file_name}
+                          </span>
+                          <button
+                            className="delete-file"
+                            onClick={() => deleteFile(file.id_doc, req.id_req)}
+                            title="Удалить"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        className="file-btn"
+                        onClick={() => handleFileSelect(req.id_req, 'client_doc')}
+                        disabled={uploadingId === req.id_req}
+                      >
+                        <i className="fas fa-upload"></i>
+                        {uploadingId === req.id_req && uploadingType === 'client_doc' ? 'Загрузка...' : 'Загрузить документ'}
+                      </button>
+                    </div>
+
+                    <div className="file-section">
+                      <span>Договор (от оценщика):</span>
+                      {files[req.id_req]?.contract?.map((file) => (
+                        <div key={file.id_doc} className="file-item">
+                          <span
+                            className="file-name"
+                            onClick={() => downloadFile(file.id_doc, file.file_name)}
+                          >
+                            {file.file_name}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="file-section">
+                      <span>Подписанный договор (от клиента):</span>
+                      {files[req.id_req]?.contract_signed?.map((file) => (
+                        <div key={file.id_doc} className="file-item">
+                          <span
+                            className="file-name"
+                            onClick={() => downloadFile(file.id_doc, file.file_name)}
+                          >
+                            {file.file_name}
+                          </span>
+                          <button
+                            className="delete-file"
+                            onClick={() => deleteFile(file.id_doc, req.id_req)}
+                            title="Удалить"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        className="file-btn"
+                        onClick={() => handleFileSelect(req.id_req, 'contract_signed')}
+                        disabled={uploadingId === req.id_req}
+                      >
+                        <i className="fas fa-upload"></i>
+                        {uploadingId === req.id_req && uploadingType === 'contract_signed' ? 'Загрузка...' : 'Загрузить подписанный договор'}
+                      </button>
+                    </div>
+
+                    <div className="file-section">
+                      <span>Итоговый отчёт:</span>
+                      {files[req.id_req]?.report?.map((file) => (
+                        <div key={file.id_doc} className="file-item">
+                          <span
+                            className="file-name"
+                            onClick={() => downloadFile(file.id_doc, file.file_name)}
+                          >
+                            {file.file_name}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
-          
+
           <div className={`cabinet-panel ${activeTab === 'review' ? 'active' : ''}`}>
             <div className="panel-header">
               <h3>Оставить отзыв</h3>
             </div>
-            <textarea 
-              value={reviewText} 
-              onChange={(e) => setReviewText(e.target.value)} 
-              rows="4" 
-              placeholder="Напишите ваш отзыв о работе оценщика..." 
-              style={{ width: '100%', padding: '12px', borderRadius: '20px', border: '1px solid var(--border)', marginBottom: '8px', fontFamily: 'Inter, sans-serif', resize: 'vertical' }}
+            <textarea
+              value={reviewText}
+              onChange={(e) => setReviewText(e.target.value)}
+              rows="4"
+              placeholder="Напишите ваш отзыв о работе оценщика..."
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '20px',
+                border: '1px solid var(--border)',
+                marginBottom: '8px',
+                fontFamily: 'Inter, sans-serif',
+                resize: 'vertical'
+              }}
             />
             <div className="star-rating">
-              {[1,2,3,4,5].map(star => (
-                <i key={star} className={`fas fa-star ${selectedRating >= star ? 'active' : ''}`} onClick={() => setSelectedRating(star)} style={{ cursor: 'pointer' }}></i>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <i
+                  key={star}
+                  className={`fas fa-star ${selectedRating >= star ? 'active' : ''}`}
+                  onClick={() => setSelectedRating(star)}
+                  style={{ cursor: 'pointer' }}
+                />
               ))}
             </div>
-            <button onClick={submitReview} className="btn-primary">Отправить отзыв</button>
-            {reviewResult && <div style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--green)' }}>{reviewResult}</div>}
+            <button onClick={submitReview} className="btn-primary">
+              Отправить отзыв
+            </button>
+            {reviewResult && (
+              <div style={{ marginTop: '16px', fontSize: '13px', color: 'var(--green)' }}>
+                {reviewResult}
+              </div>
+            )}
           </div>
-          
+
           <div className={`cabinet-panel ${activeTab === 'contract' ? 'active' : ''}`}>
             <div className="panel-header">
               <h3>Договор на оказание оценочных услуг</h3>
             </div>
-            <p style={{ marginBottom: '1rem' }}>Здесь вы можете ознакомиться с шаблоном договора</p>
-            <button className="btn-primary" style={{ background: 'var(--blue)', color: 'white', border: 'none', padding: '8px 20px', borderRadius: '30px', cursor: 'pointer' }}>
+            <p style={{ marginBottom: '24px' }}>
+              Здесь вы можете ознакомиться с шаблоном договора
+            </p>
+            <button className="btn-primary">
               <i className="fas fa-download"></i> Скачать договор
             </button>
           </div>
         </div>
       </main>
 
-      <footer>
-        <div className="container">
-          <p>© 2026 Ольга Бакаленко — Частнопрактикующий оценщик недвижимости и движимого имущества</p>
-        </div>
-      </footer>
+      <RequestModal
+        isOpen={isRequestModalOpen}
+        onClose={() => setIsRequestModalOpen(false)}
+        userId={user.id}
+        onSuccess={() => loadRequests(user.id)}
+      />
     </>
   );
 }

@@ -1,13 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 import ReviewsCarousel from '../components/ReviewsCarousel';
 
 function HomePage({ onOpenAuth }) {
-  const [heroText, setHeroText] = useState('');
+  const [heroText, setHeroText] = useState('Добро пожаловать в мою оценочную практику! Меня зовут Бакаленко Ольга, и я – профессиональный оценщик с многолетним опытом в сфере оценки имущества. Позвольте мне стать вашим надежным партнером в сфере оценки!');
+  const [reviews, setReviews] = useState([]);
 
-  useEffect(() => {
-    setHeroText(localStorage.getItem('content_hero') || 'Добро пожаловать в мою оценочную практику! Меня зовут Бакаленко Ольга, и я – профессиональный оценщик с многолетним опытом в сфере оценки имущества. Позвольте мне стать вашим надежным партнером в сфере оценки!');
+  React.useEffect(() => {
+    loadReviews();
   }, []);
+
+  const loadReviews = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/reviews');
+      const data = await response.json();
+      setReviews(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Ошибка загрузки отзывов:', err);
+    }
+  };
 
   const handleQuestionSubmit = (e) => {
     e.preventDefault();
@@ -20,6 +32,12 @@ function HomePage({ onOpenAuth }) {
     alert('Спасибо! Ваш вопрос отправлен.');
     e.target.reset();
   };
+
+  const carouselReviews = reviews.map(r => ({
+    author: r.author,
+    text: r.text,
+    rating: r.rating
+  }));
 
   return (
     <>
@@ -106,7 +124,7 @@ function HomePage({ onOpenAuth }) {
       <section className="reviews" id="reviews">
         <div className="container">
           <div className="section-title"><h2>Отзывы</h2></div>
-          <ReviewsCarousel />
+          <ReviewsCarousel reviews={carouselReviews} />
         </div>
       </section>
 
@@ -139,11 +157,7 @@ function HomePage({ onOpenAuth }) {
         </div>
       </section>
       
-      <footer>
-        <div className="container">
-          <p>© 2026 Ольга Бакаленко — Частнопрактикующий оценщик недвижимости и движимого имущества</p>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }

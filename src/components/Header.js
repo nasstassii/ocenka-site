@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 function Header({ onOpenAuth }) {
@@ -34,7 +34,15 @@ function Header({ onOpenAuth }) {
           <li><Link to="/qualifications">Квалификационные документы</Link></li>
           <li><a href="/#reviews">Отзывы</a></li>
           <li><a href="/#contact">Контакты</a></li>
-          <li><a href="#" onClick={handleCabinetClick} className="btn-cabinet"><i className="fas fa-user-lock"></i> Личный кабинет</a></li>
+          <li>
+            <button 
+              onClick={handleCabinetClick} 
+              className="btn-cabinet btn-open-auth"
+              style={{ background: 'var(--blue)', color: 'white', border: 'none' }}
+            >
+              <i className="fas fa-user-lock"></i> Личный кабинет
+            </button>
+          </li>
         </ul>
       </div>
     </nav>

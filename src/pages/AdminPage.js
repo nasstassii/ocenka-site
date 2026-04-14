@@ -5,12 +5,28 @@ function AdminPage() {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('requests');
   const [allRequests, setAllRequests] = useState([]);
-  const [heroText, setHeroText] = useState('');
-  const [qualText, setQualText] = useState('');
-  const [whyText, setWhyText] = useState('');
-  const [uploadContext, setUploadContext] = useState({ type: null, requestId: null });
-  const [showModal, setShowModal] = useState(false);
-  const [uploadFile, setUploadFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [uploadingId, setUploadingId] = useState(null);
+  const [uploadingType, setUploadingType] = useState(null);
+  const [files, setFiles] = useState({});
+  const [editingComments, setEditingComments] = useState({});
+  const [editingStatuses, setEditingStatuses] = useState({});
+  
+  // Контент для редактирования
+  const [qualTexts, setQualTexts] = useState({
+    welcome_text: '',
+    qual_list: '',
+    education: '',
+    law: '',
+    valuation_objects: '',
+    valuation_purposes: ''
+  });
+  
+  const [pricesNeeds, setPricesNeeds] = useState({});
+  const [pricesMovable, setPricesMovable] = useState({});
+  const [reviews, setReviews] = useState([]);
+  const [loadingPrices, setLoadingPrices] = useState(true);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,87 +38,313 @@ function AdminPage() {
     setUser(JSON.parse(userData));
     loadRequests();
     loadContent();
+    loadPrices();
+    loadReviews();
   }, [navigate]);
 
-  const loadRequests = () => {
-    // ТОЛЬКО ОДНА заявка: Торговый центр "Заря"
-    const defaultRequests = [
-      { 
-        id: 1, 
-        date: '2025-04-08', 
-        clientName: 'Анна С.', 
-        clientEmail: 'anna@example.com', 
-        object: 'Торговый центр "Заря"', 
-        category: 'realty', 
-        desc: 'Оценка для судебного разбирательства', 
-        status: 'waiting_docs', 
-        adminComment: 'Необходимо предоставить выписку из ЕГРН и технический паспорт', 
-        clientDocs: [], 
-        reportFile: null, 
-        contractFile: null 
+  const loadRequests = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('http://localhost:5000/api/requests');
+      const data = await response.json();
+      setAllRequests(Array.isArray(data) ? data : []);
+      
+      const comments = {};
+      const statuses = {};
+      for (const req of data) {
+        comments[req.id_req] = req.admin_comment || '';
+        statuses[req.id_req] = req.status;
+        await loadFiles(req.id_req);
       }
-    ];
-    setAllRequests(defaultRequests);
-    localStorage.setItem('admin_all_requests', JSON.stringify(defaultRequests));
-  };
-
-  const saveAllRequests = (requests) => {
-    localStorage.setItem('admin_all_requests', JSON.stringify(requests));
-    setAllRequests([...requests]);
-  };
-
-  const loadContent = () => {
-    setHeroText(localStorage.getItem('content_hero') || 'Добро пожаловать! Я частнопрактикующий оценщик Ольга Бакаленко...');
-    setQualText(localStorage.getItem('content_qual') || 'Моя квалификация: член СРО, аттестаты, страховка...');
-    setWhyText(localStorage.getItem('content_why') || '14 лет опыта, 500+ отчётов, 100% принятие');
-  };
-
-  const saveHero = () => { localStorage.setItem('content_hero', heroText); alert('Сохранено'); };
-  const saveQual = () => { localStorage.setItem('content_qual', qualText); alert('Сохранено'); };
-  const saveWhy = () => { localStorage.setItem('content_why', whyText); alert('Сохранено'); };
-
-  const updateRequestStatus = (id, newStatus) => {
-    const updated = allRequests.map(r => r.id === id ? { ...r, status: newStatus } : r);
-    saveAllRequests(updated);
-  };
-
-  const updateRequestComment = (id, comment) => {
-    const updated = allRequests.map(r => r.id === id ? { ...r, adminComment: comment } : r);
-    saveAllRequests(updated);
-  };
-
-  const openUploadModal = (type, requestId) => {
-    setUploadContext({ type, requestId });
-    setShowModal(true);
-    setUploadFile(null);
-  };
-
-  const confirmUpload = () => {
-    if (!uploadFile) {
-      alert('Выберите файл');
-      return;
+      setEditingComments(comments);
+      setEditingStatuses(statuses);
+    } catch (err) {
+      console.error('Ошибка загрузки заявок:', err);
+      setAllRequests([]);
+    } finally {
+      setIsLoading(false);
     }
-    const updated = allRequests.map(r => {
-      if (r.id === uploadContext.requestId) {
-        if (uploadContext.type === 'contract') return { ...r, contractFile: uploadFile.name };
-        if (uploadContext.type === 'report') return { ...r, reportFile: uploadFile.name };
-      }
-      return r;
-    });
-    saveAllRequests(updated);
-    alert(`Файл "${uploadFile.name}" загружен`);
-    setShowModal(false);
-    setUploadFile(null);
   };
 
-  const getCategoryName = (cat) => {
-    const map = { realty: 'Недвижимость', movable: 'Движимое имущество', business: 'Бизнес', art: 'Антиквариат' };
-    return map[cat] || cat;
+  const loadFiles = async (requestId) => {
+    try {
+      const types = ['client_doc', 'contract', 'contract_signed', 'report'];
+      const filesData = {};
+      
+      for (const type of types) {
+        const response = await fetch(`http://localhost:5000/api/upload/${requestId}/${type}`);
+        const data = await response.json();
+        filesData[type] = Array.isArray(data) ? data : [];
+      }
+      
+      setFiles(prev => ({ ...prev, [requestId]: filesData }));
+    } catch (err) {
+      console.error('Ошибка загрузки файлов:', err);
+    }
+  };
+
+  const loadContent = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/content/page/qual');
+      const data = await response.json();
+      setQualTexts({
+        welcome_text: data.welcome_text || '',
+        qual_list: data.qual_list || '',
+        education: data.education || '',
+        law: data.law || '',
+        valuation_objects: data.valuation_objects || '',
+        valuation_purposes: data.valuation_purposes || ''
+      });
+    } catch (err) {
+      console.error('Ошибка загрузки контента:', err);
+    }
+  };
+
+  const loadPrices = async () => {
+    setLoadingPrices(true);
+    try {
+      const [needsRes, movableRes] = await Promise.all([
+        fetch('http://localhost:5000/api/content/prices_needs/all'),
+        fetch('http://localhost:5000/api/content/prices_movable/all')
+      ]);
+      const needsData = await needsRes.json();
+      const movableData = await movableRes.json();
+      setPricesNeeds(needsData);
+      setPricesMovable(movableData);
+    } catch (err) {
+      console.error('Ошибка загрузки цен:', err);
+    } finally {
+      setLoadingPrices(false);
+    }
+  };
+
+  const loadReviews = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/reviews');
+      const data = await response.json();
+      setReviews(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Ошибка загрузки отзывов:', err);
+    }
+  };
+
+  const saveQualContent = async (section) => {
+    try {
+      await fetch(`http://localhost:5000/api/content/qual/${section}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: qualTexts[section] })
+      });
+      alert('Сохранено');
+    } catch (err) {
+      alert('Ошибка сохранения');
+    }
+  };
+
+const savePriceNeeds = async () => {
+    try {
+        const response = await fetch('http://localhost:5000/api/content/prices_needs/bulk', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prices: pricesNeeds })
+        });
+        const data = await response.json();
+        if (data.success) {
+            alert('Цены обновлены');
+        } else {
+            alert('Ошибка обновления');
+        }
+    } catch (err) {
+        console.error('Ошибка:', err);
+        alert('Ошибка подключения к серверу');
+    }
+};
+
+const savePriceMovable = async () => {
+    try {
+        const response = await fetch('http://localhost:5000/api/content/prices_movable/bulk', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prices: pricesMovable })
+        });
+        const data = await response.json();
+        if (data.success) {
+            alert('Цены обновлены');
+        } else {
+            alert('Ошибка обновления');
+        }
+    } catch (err) {
+        console.error('Ошибка:', err);
+        alert('Ошибка подключения к серверу');
+    }
+};
+
+  const deleteReview = async (reviewId) => {
+    if (window.confirm('Удалить этот отзыв?')) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/reviews/${reviewId}`, {
+          method: 'DELETE'
+        });
+        const data = await response.json();
+        if (data.success) {
+          alert('Отзыв удалён');
+          loadReviews();
+        } else {
+          alert('Ошибка удаления');
+        }
+      } catch (err) {
+        alert('Ошибка подключения к серверу');
+      }
+    }
+  };
+
+  const updateRequestStatus = async (id, status, admin_comment) => {
+    try {
+      await fetch(`http://localhost:5000/api/requests/${id}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status, admin_comment })
+      });
+      loadRequests();
+    } catch (err) {
+      console.error('Ошибка обновления:', err);
+    }
+  };
+
+  const deleteRequest = async (id) => {
+    if (window.confirm('Вы уверены? Заявка и все файлы будут удалены безвозвратно.')) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/requests/${id}`, {
+          method: 'DELETE'
+        });
+        const data = await response.json();
+        if (data.success) {
+          alert('Заявка удалена');
+          loadRequests();
+        } else {
+          alert('Ошибка удаления');
+        }
+      } catch (err) {
+        alert('Ошибка подключения к серверу');
+      }
+    }
+  };
+
+  const uploadAdminFile = async (requestId, file, type) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('uploaded_by', 'admin');
+
+    setUploadingId(requestId);
+    setUploadingType(type);
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/upload/${requestId}/${type}`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('Файл загружен');
+        await loadFiles(requestId);
+      } else {
+        alert('Ошибка загрузки файла');
+      }
+    } catch (err) {
+      console.error('Ошибка:', err);
+      alert('Ошибка подключения к серверу');
+    } finally {
+      setUploadingId(null);
+      setUploadingType(null);
+    }
+  };
+
+  const deleteFile = async (fileId, requestId) => {
+    if (window.confirm('Удалить этот файл?')) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/upload/${fileId}`, {
+          method: 'DELETE'
+        });
+        const data = await response.json();
+        if (data.success) {
+          alert('Файл удалён');
+          await loadFiles(requestId);
+        } else {
+          alert('Ошибка удаления файла');
+        }
+      } catch (err) {
+        alert('Ошибка подключения к серверу');
+      }
+    }
+  };
+
+  const handleFileSelect = (requestId, type) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,.jpg,.jpeg,.png';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (['pdf', 'jpg', 'jpeg', 'png'].includes(ext)) {
+          uploadAdminFile(requestId, file, type);
+        } else {
+          alert('Допустимые форматы: PDF, JPG, PNG');
+        }
+      }
+    };
+    input.click();
+  };
+
+  const downloadFile = async (fileId, fileName) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/upload/download/${fileId}`);
+      if (!response.ok) throw new Error('Ошибка загрузки файла');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Ошибка скачивания:', error);
+      alert('Не удалось скачать файл');
+    }
   };
 
   const handleLogout = () => {
     sessionStorage.removeItem('cabinet_user');
     navigate('/');
+  };
+
+  const getStatusText = (status) => {
+    const map = {
+      new: 'Новая',
+      work: 'В работе',
+      waiting_docs: 'Ожидает документов',
+      waiting_payment: 'Ожидает оплаты',
+      report_ready: 'Завершено'
+    };
+    return map[status] || status;
+  };
+
+  // Группировка цен для отображения
+  const needsCategories = {
+    'Квартиры, комнаты, доли': ['apartment_base', 'apartment_comfort', 'apartment_urgent'],
+    'Жилые дома и коттеджи': ['house_50', 'house_100', 'house_150', 'house_more'],
+    'Земельные участки': ['land', 'land_commercial'],
+    'Гаражи и нежилые объекты': ['garage', 'non_residential_sale', 'non_residential_court', 'building_sale', 'building_court', 'built_in'],
+    'Скидки': ['discount_2', 'discount_3', 'discount_more'],
+    'Права пользования': ['rent_right']
+  };
+
+  const movableCategories = {
+    'Автотранспорт': ['car_light', 'car_truck', 'car_construction'],
+    'Оборудование': ['equipment_serial', 'equipment_special', 'equipment_line'],
+    'Иное имущество': ['cattle', 'goods']
   };
 
   if (!user) return null;
@@ -117,8 +359,12 @@ function AdminPage() {
           </div>
           <div className="user-info">
             <span className="user-email">{user.email}</span>
-            <button className="logout-btn" onClick={handleLogout}><i className="fas fa-sign-out-alt"></i> Выйти</button>
-            <a href="/" className="back-link"><i className="fas fa-arrow-left"></i> На сайт</a>
+            <button className="logout-btn" onClick={handleLogout}>
+              <i className="fas fa-sign-out-alt"></i> Выйти
+            </button>
+            <a href="/" className="back-link">
+              <i className="fas fa-arrow-left"></i> На сайт
+            </a>
           </div>
         </div>
       </div>
@@ -127,100 +373,251 @@ function AdminPage() {
         <div className="container">
           <div className="page-title">
             <h1>Админ-панель</h1>
-            <p>Управление заявками и контентом сайта</p>
+            <p>Управление заявками, контентом и отзывами</p>
           </div>
-          
+
           <div className="cabinet-tabs">
-            <button className={`tab-btn ${activeTab === 'requests' ? 'active' : ''}`} onClick={() => setActiveTab('requests')}>Все заявки</button>
-            <button className={`tab-btn ${activeTab === 'content' ? 'active' : ''}`} onClick={() => setActiveTab('content')}>Редактирование контента</button>
+            <button className={`tab-btn ${activeTab === 'requests' ? 'active' : ''}`} onClick={() => setActiveTab('requests')}>Заявки</button>
+            <button className={`tab-btn ${activeTab === 'qualification' ? 'active' : ''}`} onClick={() => setActiveTab('qualification')}>Квалификация</button>
+            <button className={`tab-btn ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => setActiveTab('reviews')}>Отзывы</button>
+            <button className={`tab-btn ${activeTab === 'prices_needs' ? 'active' : ''}`} onClick={() => setActiveTab('prices_needs')}>Цены (недвижимость)</button>
+            <button className={`tab-btn ${activeTab === 'prices_movable' ? 'active' : ''}`} onClick={() => setActiveTab('prices_movable')}>Цены (движимое)</button>
           </div>
-          
+
+          {/* Вкладка: Заявки */}
           <div className={`cabinet-panel ${activeTab === 'requests' ? 'active' : ''}`}>
-            <div className="panel-header">
-              <h3>Заявки клиентов</h3>
-            </div>
-            {allRequests.map(req => (
-              <div key={req.id} className="request-card">
-                <div className="request-header">
-                  <span className="request-object">{req.object}</span>
-                  <select className="status-select" value={req.status} onChange={(e) => updateRequestStatus(req.id, e.target.value)}>
-                    <option value="new">Новая</option>
-                    <option value="work">В работе</option>
-                    <option value="waiting_docs">Ожидает документов</option>
-                    <option value="waiting_payment">Ожидает оплаты</option>
-                    <option value="report_ready">Отчет загружен</option>
-                  </select>
+            <div className="panel-header"><h3>Заявки клиентов</h3></div>
+            {isLoading ? (
+              <div style={{ textAlign: 'center', padding: '20px' }}>Загрузка...</div>
+            ) : allRequests.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '20px', color: '#B8AFA0' }}>Нет заявок</div>
+            ) : (
+              allRequests.map(req => (
+                <div key={req.id_req} className="request-card">
+                  <div className="request-header">
+                    <span className="request-object">{req.name}</span>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <select
+                        className="status-select"
+                        value={editingStatuses[req.id_req] || req.status}
+                        onChange={(e) => setEditingStatuses(prev => ({ ...prev, [req.id_req]: e.target.value }))}
+                      >
+                        <option value="new">Новая</option>
+                        <option value="work">В работе</option>
+                        <option value="waiting_docs">Ожидает документов</option>
+                        <option value="waiting_payment">Ожидает оплаты</option>
+                        <option value="report_ready">Завершено</option>
+                      </select>
+                      <button onClick={() => deleteRequest(req.id_req)} className="delete-request-btn" title="Удалить заявку">✕</button>
+                    </div>
+                  </div>
+                  <div className="request-details">
+                    <p><strong>Клиент:</strong> {req.client_name} ({req.client_email})</p>
+                    <p><strong>Телефон:</strong> {req.client_phone || 'не указан'}</p>
+                    <p><strong>Дата:</strong> {new Date(req.created_at).toLocaleDateString()}</p>
+                    <p><strong>Заказчик:</strong> {req.client_type}</p>
+                    <p><strong>Объект оценки:</strong> {req.project_type}</p>
+                    <p><strong>Ограничения:</strong> {req.has_restrictions ? 'Да' : 'Нет'}</p>
+                    <p><strong>Цель оценки:</strong> {req.purpose}</p>
+                    <p><strong>Описание:</strong> {req.description || '—'}</p>
+
+                    <div><strong>Комментарий оценщика:</strong></div>
+                    <textarea
+                      className="admin-comment-area"
+                      rows="2"
+                      value={editingComments[req.id_req] || ''}
+                      onChange={(e) => setEditingComments(prev => ({ ...prev, [req.id_req]: e.target.value }))}
+                    ></textarea>
+
+                    <div className="file-section">
+                      <span>Документы клиента:</span>
+                      {files[req.id_req]?.client_doc?.map((file) => (
+                        <div key={file.id_doc} className="file-item">
+                          <span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span>
+                          <button className="delete-file" onClick={() => deleteFile(file.id_doc, req.id_req)} title="Удалить">✕</button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="file-section">
+                      <span>Договор (от оценщика):</span>
+                      {files[req.id_req]?.contract?.map((file) => (
+                        <div key={file.id_doc} className="file-item">
+                          <span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span>
+                          <button className="delete-file" onClick={() => deleteFile(file.id_doc, req.id_req)} title="Удалить">✕</button>
+                        </div>
+                      ))}
+                      <button className="file-btn" onClick={() => handleFileSelect(req.id_req, 'contract')} disabled={uploadingId === req.id_req}>
+                        <i className="fas fa-upload"></i> {uploadingId === req.id_req && uploadingType === 'contract' ? 'Загрузка...' : 'Загрузить договор'}
+                      </button>
+                    </div>
+
+                    <div className="file-section">
+                      <span>Подписанный договор (от клиента):</span>
+                      {files[req.id_req]?.contract_signed?.map((file) => (
+                        <div key={file.id_doc} className="file-item">
+                          <span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span>
+                          <button className="delete-file" onClick={() => deleteFile(file.id_doc, req.id_req)} title="Удалить">✕</button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="file-section">
+                      <span>Итоговый отчёт:</span>
+                      {files[req.id_req]?.report?.map((file) => (
+                        <div key={file.id_doc} className="file-item">
+                          <span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span>
+                          <button className="delete-file" onClick={() => deleteFile(file.id_doc, req.id_req)} title="Удалить">✕</button>
+                        </div>
+                      ))}
+                      <button className="file-btn" onClick={() => handleFileSelect(req.id_req, 'report')} disabled={uploadingId === req.id_req}>
+                        <i className="fas fa-upload"></i> {uploadingId === req.id_req && uploadingType === 'report' ? 'Загрузка...' : 'Загрузить отчёт'}
+                      </button>
+                    </div>
+
+                    <button className="btn-save" onClick={() => updateRequestStatus(req.id_req, editingStatuses[req.id_req], editingComments[req.id_req])} style={{ marginTop: '16px' }}>
+                      Сохранить изменения
+                    </button>
+                  </div>
                 </div>
-                <div className="request-details">
-                  <p><strong>Клиент:</strong> {req.clientName} ({req.clientEmail})</p>
-                  <p><strong>Дата:</strong> {req.date}</p>
-                  <p><strong>Категория:</strong> {getCategoryName(req.category)}</p>
-                  <p><strong>Описание:</strong> {req.desc}</p>
-                  <div><strong>Комментарий оценщика:</strong></div>
-                  <textarea className="admin-comment-area" rows="2" placeholder="Добавить комментарий для клиента..." value={req.adminComment || ''} onChange={(e) => updateRequestComment(req.id, e.target.value)}></textarea>
-                  <div className="file-section">
-                    <span><i className="fas fa-paperclip"></i> Документы клиента:</span>
-                    {req.clientDocs && req.clientDocs.length ? req.clientDocs.map(d => <span key={d} className="file-btn"><i className="fas fa-file"></i> {d}</span>) : <span>нет</span>}
-                  </div>
-                  <div className="file-section">
-                    <span><i className="fas fa-file-contract"></i> Договор:</span>
-                    {req.contractFile ? <span className="file-btn"><i className="fas fa-check"></i> Загружен</span> : <span>не загружен</span>}
-                    <button className="file-btn" onClick={() => openUploadModal('contract', req.id)}><i className="fas fa-upload"></i> Загрузить договор</button>
-                  </div>
-                  <div className="file-section">
-                    <span><i className="fas fa-file-pdf"></i> Итоговый отчёт:</span>
-                    {req.reportFile ? <span className="file-btn"><i className="fas fa-check"></i> Загружен</span> : <span>не загружен</span>}
-                    <button className="file-btn" onClick={() => openUploadModal('report', req.id)}><i className="fas fa-upload"></i> Загрузить отчёт</button>
-                  </div>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
-          
-          <div className={`cabinet-panel ${activeTab === 'content' ? 'active' : ''}`}>
+
+          {/* Вкладка: Квалификация */}
+          <div className={`cabinet-panel ${activeTab === 'qualification' ? 'active' : ''}`}>
+            <div className="panel-header"><h3>Редактирование страницы квалификации</h3></div>
+            <div className="content-editor">
+              <h4>Приветственный текст</h4>
+              <textarea rows="3" value={qualTexts.welcome_text} onChange={(e) => setQualTexts({ ...qualTexts, welcome_text: e.target.value })}></textarea>
+              <button onClick={() => saveQualContent('welcome_text')}>Сохранить</button>
+            </div>
+            <div className="content-editor">
+              <h4>Список квалификации</h4>
+              <textarea rows="6" value={qualTexts.qual_list} onChange={(e) => setQualTexts({ ...qualTexts, qual_list: e.target.value })}></textarea>
+              <button onClick={() => saveQualContent('qual_list')}>Сохранить</button>
+            </div>
+            <div className="content-editor">
+              <h4>Образование</h4>
+              <textarea rows="2" value={qualTexts.education} onChange={(e) => setQualTexts({ ...qualTexts, education: e.target.value })}></textarea>
+              <button onClick={() => saveQualContent('education')}>Сохранить</button>
+            </div>
+            <div className="content-editor">
+              <h4>Законодательство</h4>
+              <textarea rows="2" value={qualTexts.law} onChange={(e) => setQualTexts({ ...qualTexts, law: e.target.value })}></textarea>
+              <button onClick={() => saveQualContent('law')}>Сохранить</button>
+            </div>
+            <div className="content-editor">
+              <h4>Объекты оценки</h4>
+              <textarea rows="2" value={qualTexts.valuation_objects} onChange={(e) => setQualTexts({ ...qualTexts, valuation_objects: e.target.value })}></textarea>
+              <button onClick={() => saveQualContent('valuation_objects')}>Сохранить</button>
+            </div>
+            <div className="content-editor">
+              <h4>Цели оценки</h4>
+              <textarea rows="2" value={qualTexts.valuation_purposes} onChange={(e) => setQualTexts({ ...qualTexts, valuation_purposes: e.target.value })}></textarea>
+              <button onClick={() => saveQualContent('valuation_purposes')}>Сохранить</button>
+            </div>
+          </div>
+
+          {/* Вкладка: Отзывы */}
+          <div className={`cabinet-panel ${activeTab === 'reviews' ? 'active' : ''}`}>
+            <div className="panel-header"><h3>Управление отзывами</h3></div>
+            {reviews.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '20px', color: '#B8AFA0' }}>Нет отзывов</div>
+            ) : (
+              reviews.map((review) => (
+                <div key={review.id_rev} className="request-card" style={{ background: 'white' }}>
+                  <div className="request-header">
+                    <span className="request-object">{review.author}</span>
+                    <div className="stars" style={{ color: '#F5A623', fontSize: '14px' }}>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</div>
+                  </div>
+                  <div className="request-details">
+                    <p><strong>Дата:</strong> {new Date(review.created_at).toLocaleDateString()}</p>
+                    <p><strong>Отзыв:</strong> {review.text}</p>
+                    <div className="file-section">
+                      <button onClick={() => deleteReview(review.id_rev)} style={{ color: '#c44', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', padding: '8px 16px', borderRadius: '30px', border: '1px solid #c44' }}>
+                        Удалить отзыв
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Вкладка: Цены недвижимость */}
+          <div className={`cabinet-panel ${activeTab === 'prices_needs' ? 'active' : ''}`}>
             <div className="panel-header">
-              <h3>Редактирование страниц</h3>
+              <h3>Редактирование цен на недвижимость</h3>
+              <button onClick={savePriceNeeds} className="btn-save">Сохранить все цены</button>
             </div>
-            <div className="content-editor">
-              <h4>Главная страница — текст приветствия</h4>
-              <textarea rows="4" value={heroText} onChange={(e) => setHeroText(e.target.value)}></textarea>
-              <button onClick={saveHero}>Сохранить</button>
+            {loadingPrices ? (
+              <div style={{ textAlign: 'center', padding: '20px' }}>Загрузка цен...</div>
+            ) : (
+              Object.entries(needsCategories).map(([category, keys]) => (
+                <div key={category} className="price-card" style={{ marginBottom: '20px' }}>
+                  <h4>{category}</h4>
+                  {keys.map(key => pricesNeeds[key] && (
+                    <div key={key} className="file-section" style={{ justifyContent: 'space-between', marginBottom: '10px' }}>
+                      <span style={{ flex: '2', minWidth: '300px' }}>{pricesNeeds[key].name}</span>
+                      <input 
+                        type="text" 
+                        value={pricesNeeds[key].term} 
+                        onChange={(e) => setPricesNeeds(prev => ({ ...prev, [key]: { ...prev[key], term: e.target.value } }))} 
+                        style={{ width: '130px', padding: '8px 12px', borderRadius: '30px', border: '1px solid var(--border)', fontFamily: 'Inter, sans-serif', fontSize: '14px', textAlign: 'center' }} 
+                        placeholder="Срок"
+                      />
+                      <input 
+                        type="text" 
+                        value={pricesNeeds[key].price} 
+                        onChange={(e) => setPricesNeeds(prev => ({ ...prev, [key]: { ...prev[key], price: e.target.value } }))} 
+                        style={{ width: '120px', padding: '8px 12px', borderRadius: '30px', border: '1px solid var(--border)', fontFamily: 'Inter, sans-serif', fontSize: '14px', textAlign: 'center' }} 
+                        placeholder="Цена"
+                      />
+                    </div>
+                  ))}
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Вкладка: Цены движимое имущество */}
+          <div className={`cabinet-panel ${activeTab === 'prices_movable' ? 'active' : ''}`}>
+            <div className="panel-header">
+              <h3>Редактирование цен на движимое имущество</h3>
+              <button onClick={savePriceMovable} className="btn-save">Сохранить все цены</button>
             </div>
-            <div className="content-editor">
-              <h4>Страница "О квалификации" — текст</h4>
-              <textarea rows="4" value={qualText} onChange={(e) => setQualText(e.target.value)}></textarea>
-              <button onClick={saveQual}>Сохранить</button>
-            </div>
-            <div className="content-editor">
-              <h4>Блок "Почему выбирают меня" — преимущества</h4>
-              <textarea rows="3" value={whyText} onChange={(e) => setWhyText(e.target.value)}></textarea>
-              <button onClick={saveWhy}>Сохранить</button>
-            </div>
+            {loadingPrices ? (
+              <div style={{ textAlign: 'center', padding: '20px' }}>Загрузка цен...</div>
+            ) : (
+              Object.entries(movableCategories).map(([category, keys]) => (
+                <div key={category} className="price-card" style={{ marginBottom: '20px' }}>
+                  <h4>{category}</h4>
+                  {keys.map(key => pricesMovable[key] && (
+                    <div key={key} className="file-section" style={{ justifyContent: 'space-between', marginBottom: '10px' }}>
+                      <span style={{ flex: '2', minWidth: '300px' }}>{pricesMovable[key].name}</span>
+                      <input 
+                        type="text" 
+                        value={pricesMovable[key].term} 
+                        onChange={(e) => setPricesMovable(prev => ({ ...prev, [key]: { ...prev[key], term: e.target.value } }))} 
+                        style={{ width: '130px', padding: '8px 12px', borderRadius: '30px', border: '1px solid var(--border)', fontFamily: 'Inter, sans-serif', fontSize: '14px', textAlign: 'center' }} 
+                        placeholder="Срок"
+                      />
+                      <input 
+                        type="text" 
+                        value={pricesMovable[key].price} 
+                        onChange={(e) => setPricesMovable(prev => ({ ...prev, [key]: { ...prev[key], price: e.target.value } }))} 
+                        style={{ width: '120px', padding: '8px 12px', borderRadius: '30px', border: '1px solid var(--border)', fontFamily: 'Inter, sans-serif', fontSize: '14px', textAlign: 'center' }} 
+                        placeholder="Цена"
+                      />
+                    </div>
+                  ))}
+                </div>
+              ))
+            )}
           </div>
         </div>
       </main>
-
-      <footer>
-        <div className="container">
-          <p>© 2026 Ольга Бакаленко — Частнопрактикующий оценщик недвижимости и движимого имущества</p>
-        </div>
-      </footer>
-
-      {showModal && (
-        <div className="auth-overlay" style={{ display: 'flex' }}>
-          <div className="auth-modal">
-            <button className="close-auth" onClick={() => setShowModal(false)}>&times;</button>
-            <h3 style={{ marginBottom: '1rem', color: 'var(--blue)' }}>
-              {uploadContext.type === 'contract' ? 'Загрузить договор' : 'Загрузить отчёт'}
-            </h3>
-            <input type="file" accept=".pdf,.jpg,.png" onChange={(e) => setUploadFile(e.target.files[0])} style={{ width: '100%', padding: '12px', margin: '8px 0', border: '1px solid var(--border)', borderRadius: '20px' }} />
-            <div className="modal-buttons" style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
-              <button onClick={confirmUpload} style={{ flex: 1, padding: '12px', borderRadius: '30px', border: 'none', background: 'var(--blue)', color: 'white', cursor: 'pointer', fontWeight: 600 }}>Загрузить</button>
-              <button onClick={() => setShowModal(false)} style={{ flex: 1, padding: '12px', borderRadius: '30px', border: 'none', background: 'var(--blue-bg)', cursor: 'pointer', fontWeight: 600 }}>Отмена</button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
