@@ -127,35 +127,6 @@ function HomePage({ onOpenAuth }) {
           <ReviewsCarousel reviews={carouselReviews} />
         </div>
       </section>
-
-      <section className="cta-banner">
-        <div className="container">
-          <h3>Нужна оценка имущества?</h3>
-          <p>Оставьте заявку — я рассчитаю стоимость и сроки в течение часа</p>
-          <button onClick={onOpenAuth} className="btn-primary" style={{ background: 'white', color: 'var(--blue)' }}>Оставить заявку <i className="fas fa-arrow-right"></i></button>
-        </div>
-      </section>
-
-      <section className="contact" id="contact">
-        <div className="container contact-wrapper">
-          <div className="contact-info">
-            <h2>Контакты</h2>
-            <p>Есть вопросы? Напишите или позвоните — я отвечу в ближайшее время</p>
-            <div className="contact-detail"><i className="fas fa-phone-alt"></i> <span>+7 (906) 185-96-69</span></div>
-            <div className="contact-detail"><i className="fas fa-envelope"></i> <span>bakalenko-olga@yandex.ru</span></div>
-            <div className="contact-detail"><i className="fas fa-map-marker-alt"></i> <span>Работаю онлайн по всей России</span></div>
-            <div className="contact-detail hours"><i className="fas fa-clock"></i> <span>Пн–Пт: 9:00 – 17:00</span></div>
-          </div>
-          <div className="contact-form">
-            <form onSubmit={handleQuestionSubmit}>
-              <input type="text" name="name" placeholder="Ваше имя" />
-              <input type="email" name="email" placeholder="Ваш Email" />
-              <textarea name="message" rows="3" placeholder="Ваш вопрос"></textarea>
-              <button type="submit">Отправить вопрос <i className="fas fa-arrow-right"></i></button>
-            </form>
-          </div>
-        </div>
-      </section>
       
       <Footer />
     </>

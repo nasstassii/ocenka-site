@@ -12,7 +12,6 @@ function AdminPage() {
   const [editingComments, setEditingComments] = useState({});
   const [editingStatuses, setEditingStatuses] = useState({});
   
-  // Контент для редактирования
   const [qualTexts, setQualTexts] = useState({
     welcome_text: '',
     qual_list: '',
@@ -37,7 +36,7 @@ function AdminPage() {
     }
     setUser(JSON.parse(userData));
     loadRequests();
-    loadContent();
+    loadQualification();
     loadPrices();
     loadReviews();
   }, [navigate]);
@@ -83,9 +82,9 @@ function AdminPage() {
     }
   };
 
-  const loadContent = async () => {
+  const loadQualification = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/content/page/qual');
+      const response = await fetch('http://localhost:5000/api/content/qual/all');
       const data = await response.json();
       setQualTexts({
         welcome_text: data.welcome_text || '',
@@ -96,7 +95,7 @@ function AdminPage() {
         valuation_purposes: data.valuation_purposes || ''
       });
     } catch (err) {
-      console.error('Ошибка загрузки контента:', err);
+      console.error('Ошибка загрузки квалификации:', err);
     }
   };
 
@@ -141,43 +140,43 @@ function AdminPage() {
     }
   };
 
-const savePriceNeeds = async () => {
+  const savePriceNeeds = async () => {
     try {
-        const response = await fetch('http://localhost:5000/api/content/prices_needs/bulk', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prices: pricesNeeds })
-        });
-        const data = await response.json();
-        if (data.success) {
-            alert('Цены обновлены');
-        } else {
-            alert('Ошибка обновления');
-        }
+      const response = await fetch('http://localhost:5000/api/content/prices_needs/bulk', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prices: pricesNeeds })
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('Цены сохранены');
+      } else {
+        alert('Ошибка сохранения');
+      }
     } catch (err) {
-        console.error('Ошибка:', err);
-        alert('Ошибка подключения к серверу');
+      console.error('Ошибка:', err);
+      alert('Ошибка подключения к серверу');
     }
-};
+  };
 
-const savePriceMovable = async () => {
+  const savePriceMovable = async () => {
     try {
-        const response = await fetch('http://localhost:5000/api/content/prices_movable/bulk', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prices: pricesMovable })
-        });
-        const data = await response.json();
-        if (data.success) {
-            alert('Цены обновлены');
-        } else {
-            alert('Ошибка обновления');
-        }
+      const response = await fetch('http://localhost:5000/api/content/prices_movable/bulk', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prices: pricesMovable })
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('Цены сохранены');
+      } else {
+        alert('Ошибка сохранения');
+      }
     } catch (err) {
-        console.error('Ошибка:', err);
-        alert('Ошибка подключения к серверу');
+      console.error('Ошибка:', err);
+      alert('Ошибка подключения к серверу');
     }
-};
+  };
 
   const deleteReview = async (reviewId) => {
     if (window.confirm('Удалить этот отзыв?')) {
@@ -331,7 +330,6 @@ const savePriceMovable = async () => {
     return map[status] || status;
   };
 
-  // Группировка цен для отображения
   const needsCategories = {
     'Квартиры, комнаты, доли': ['apartment_base', 'apartment_comfort', 'apartment_urgent'],
     'Жилые дома и коттеджи': ['house_50', 'house_100', 'house_150', 'house_more'],
@@ -378,13 +376,13 @@ const savePriceMovable = async () => {
 
           <div className="cabinet-tabs">
             <button className={`tab-btn ${activeTab === 'requests' ? 'active' : ''}`} onClick={() => setActiveTab('requests')}>Заявки</button>
-            <button className={`tab-btn ${activeTab === 'qualification' ? 'active' : ''}`} onClick={() => setActiveTab('qualification')}>Квалификация</button>
+            <button className={`tab-btn ${activeTab === 'content' ? 'active' : ''}`} onClick={() => setActiveTab('content')}>Квалификация</button>
             <button className={`tab-btn ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => setActiveTab('reviews')}>Отзывы</button>
-            <button className={`tab-btn ${activeTab === 'prices_needs' ? 'active' : ''}`} onClick={() => setActiveTab('prices_needs')}>Цены (недвижимость)</button>
-            <button className={`tab-btn ${activeTab === 'prices_movable' ? 'active' : ''}`} onClick={() => setActiveTab('prices_movable')}>Цены (движимое)</button>
+            <button className={`tab-btn ${activeTab === 'prices_needs' ? 'active' : ''}`} onClick={() => setActiveTab('prices_needs')}>Цены недвижимость</button>
+            <button className={`tab-btn ${activeTab === 'prices_movable' ? 'active' : ''}`} onClick={() => setActiveTab('prices_movable')}>Цены движимое</button>
           </div>
 
-          {/* Вкладка: Заявки */}
+          {/* Заявки */}
           <div className={`cabinet-panel ${activeTab === 'requests' ? 'active' : ''}`}>
             <div className="panel-header"><h3>Заявки клиентов</h3></div>
             {isLoading ? (
@@ -397,18 +395,14 @@ const savePriceMovable = async () => {
                   <div className="request-header">
                     <span className="request-object">{req.name}</span>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                      <select
-                        className="status-select"
-                        value={editingStatuses[req.id_req] || req.status}
-                        onChange={(e) => setEditingStatuses(prev => ({ ...prev, [req.id_req]: e.target.value }))}
-                      >
+                      <select className="status-select" value={editingStatuses[req.id_req] || req.status} onChange={(e) => setEditingStatuses(prev => ({ ...prev, [req.id_req]: e.target.value }))}>
                         <option value="new">Новая</option>
                         <option value="work">В работе</option>
                         <option value="waiting_docs">Ожидает документов</option>
                         <option value="waiting_payment">Ожидает оплаты</option>
                         <option value="report_ready">Завершено</option>
                       </select>
-                      <button onClick={() => deleteRequest(req.id_req)} className="delete-request-btn" title="Удалить заявку">✕</button>
+                      <button onClick={() => deleteRequest(req.id_req)} className="delete-request-btn">✕</button>
                     </div>
                   </div>
                   <div className="request-details">
@@ -422,71 +416,44 @@ const savePriceMovable = async () => {
                     <p><strong>Описание:</strong> {req.description || '—'}</p>
 
                     <div><strong>Комментарий оценщика:</strong></div>
-                    <textarea
-                      className="admin-comment-area"
-                      rows="2"
-                      value={editingComments[req.id_req] || ''}
-                      onChange={(e) => setEditingComments(prev => ({ ...prev, [req.id_req]: e.target.value }))}
-                    ></textarea>
+                    <textarea className="admin-comment-area" rows="2" value={editingComments[req.id_req] || ''} onChange={(e) => setEditingComments(prev => ({ ...prev, [req.id_req]: e.target.value }))}></textarea>
 
-                    <div className="file-section">
-                      <span>Документы клиента:</span>
+                    <div className="file-section"><span>Документы клиента:</span>
                       {files[req.id_req]?.client_doc?.map((file) => (
-                        <div key={file.id_doc} className="file-item">
-                          <span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span>
-                          <button className="delete-file" onClick={() => deleteFile(file.id_doc, req.id_req)} title="Удалить">✕</button>
-                        </div>
+                        <div key={file.id_doc} className="file-item"><span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span><button className="delete-file" onClick={() => deleteFile(file.id_doc, req.id_req)}>✕</button></div>
                       ))}
                     </div>
 
-                    <div className="file-section">
-                      <span>Договор (от оценщика):</span>
+                    <div className="file-section"><span>Договор (от оценщика):</span>
                       {files[req.id_req]?.contract?.map((file) => (
-                        <div key={file.id_doc} className="file-item">
-                          <span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span>
-                          <button className="delete-file" onClick={() => deleteFile(file.id_doc, req.id_req)} title="Удалить">✕</button>
-                        </div>
+                        <div key={file.id_doc} className="file-item"><span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span><button className="delete-file" onClick={() => deleteFile(file.id_doc, req.id_req)}>✕</button></div>
                       ))}
-                      <button className="file-btn" onClick={() => handleFileSelect(req.id_req, 'contract')} disabled={uploadingId === req.id_req}>
-                        <i className="fas fa-upload"></i> {uploadingId === req.id_req && uploadingType === 'contract' ? 'Загрузка...' : 'Загрузить договор'}
-                      </button>
+                      <button className="file-btn" onClick={() => handleFileSelect(req.id_req, 'contract')} disabled={uploadingId === req.id_req}><i className="fas fa-upload"></i> Загрузить договор</button>
                     </div>
 
-                    <div className="file-section">
-                      <span>Подписанный договор (от клиента):</span>
+                    <div className="file-section"><span>Подписанный договор (от клиента):</span>
                       {files[req.id_req]?.contract_signed?.map((file) => (
-                        <div key={file.id_doc} className="file-item">
-                          <span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span>
-                          <button className="delete-file" onClick={() => deleteFile(file.id_doc, req.id_req)} title="Удалить">✕</button>
-                        </div>
+                        <div key={file.id_doc} className="file-item"><span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span><button className="delete-file" onClick={() => deleteFile(file.id_doc, req.id_req)}>✕</button></div>
                       ))}
                     </div>
 
-                    <div className="file-section">
-                      <span>Итоговый отчёт:</span>
+                    <div className="file-section"><span>Итоговый отчёт:</span>
                       {files[req.id_req]?.report?.map((file) => (
-                        <div key={file.id_doc} className="file-item">
-                          <span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span>
-                          <button className="delete-file" onClick={() => deleteFile(file.id_doc, req.id_req)} title="Удалить">✕</button>
-                        </div>
+                        <div key={file.id_doc} className="file-item"><span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span><button className="delete-file" onClick={() => deleteFile(file.id_doc, req.id_req)}>✕</button></div>
                       ))}
-                      <button className="file-btn" onClick={() => handleFileSelect(req.id_req, 'report')} disabled={uploadingId === req.id_req}>
-                        <i className="fas fa-upload"></i> {uploadingId === req.id_req && uploadingType === 'report' ? 'Загрузка...' : 'Загрузить отчёт'}
-                      </button>
+                      <button className="file-btn" onClick={() => handleFileSelect(req.id_req, 'report')} disabled={uploadingId === req.id_req}><i className="fas fa-upload"></i> Загрузить отчёт</button>
                     </div>
 
-                    <button className="btn-save" onClick={() => updateRequestStatus(req.id_req, editingStatuses[req.id_req], editingComments[req.id_req])} style={{ marginTop: '16px' }}>
-                      Сохранить изменения
-                    </button>
+                    <button className="btn-save" onClick={() => updateRequestStatus(req.id_req, editingStatuses[req.id_req], editingComments[req.id_req])}>Сохранить изменения</button>
                   </div>
                 </div>
               ))
             )}
           </div>
 
-          {/* Вкладка: Квалификация */}
-          <div className={`cabinet-panel ${activeTab === 'qualification' ? 'active' : ''}`}>
-            <div className="panel-header"><h3>Редактирование страницы квалификации</h3></div>
+          {/* Контент - квалификация */}
+          <div className={`cabinet-panel ${activeTab === 'content' ? 'active' : ''}`}>
+            <div className="panel-header"><h3>Квалификация</h3></div>
             <div className="content-editor">
               <h4>Приветственный текст</h4>
               <textarea rows="3" value={qualTexts.welcome_text} onChange={(e) => setQualTexts({ ...qualTexts, welcome_text: e.target.value })}></textarea>
@@ -519,9 +486,9 @@ const savePriceMovable = async () => {
             </div>
           </div>
 
-          {/* Вкладка: Отзывы */}
+          {/* Отзывы */}
           <div className={`cabinet-panel ${activeTab === 'reviews' ? 'active' : ''}`}>
-            <div className="panel-header"><h3>Управление отзывами</h3></div>
+            <div className="panel-header"><h3>Отзывы</h3></div>
             {reviews.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '20px', color: '#B8AFA0' }}>Нет отзывов</div>
             ) : (
@@ -529,92 +496,50 @@ const savePriceMovable = async () => {
                 <div key={review.id_rev} className="request-card" style={{ background: 'white' }}>
                   <div className="request-header">
                     <span className="request-object">{review.author}</span>
-                    <div className="stars" style={{ color: '#F5A623', fontSize: '14px' }}>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</div>
+                    <div className="stars" style={{ color: '#F5A623' }}>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</div>
                   </div>
                   <div className="request-details">
                     <p><strong>Дата:</strong> {new Date(review.created_at).toLocaleDateString()}</p>
                     <p><strong>Отзыв:</strong> {review.text}</p>
-                    <div className="file-section">
-                      <button onClick={() => deleteReview(review.id_rev)} style={{ color: '#c44', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', padding: '8px 16px', borderRadius: '30px', border: '1px solid #c44' }}>
-                        Удалить отзыв
-                      </button>
-                    </div>
+                    <button onClick={() => deleteReview(review.id_rev)} style={{ color: '#c44', background: 'none', border: '1px solid #c44', padding: '8px 16px', borderRadius: '30px', cursor: 'pointer' }}>Удалить отзыв</button>
                   </div>
                 </div>
               ))
             )}
           </div>
 
-          {/* Вкладка: Цены недвижимость */}
+          {/* Цены недвижимость */}
           <div className={`cabinet-panel ${activeTab === 'prices_needs' ? 'active' : ''}`}>
-            <div className="panel-header">
-              <h3>Редактирование цен на недвижимость</h3>
-              <button onClick={savePriceNeeds} className="btn-save">Сохранить все цены</button>
-            </div>
-            {loadingPrices ? (
-              <div style={{ textAlign: 'center', padding: '20px' }}>Загрузка цен...</div>
-            ) : (
-              Object.entries(needsCategories).map(([category, keys]) => (
-                <div key={category} className="price-card" style={{ marginBottom: '20px' }}>
-                  <h4>{category}</h4>
-                  {keys.map(key => pricesNeeds[key] && (
-                    <div key={key} className="file-section" style={{ justifyContent: 'space-between', marginBottom: '10px' }}>
-                      <span style={{ flex: '2', minWidth: '300px' }}>{pricesNeeds[key].name}</span>
-                      <input 
-                        type="text" 
-                        value={pricesNeeds[key].term} 
-                        onChange={(e) => setPricesNeeds(prev => ({ ...prev, [key]: { ...prev[key], term: e.target.value } }))} 
-                        style={{ width: '130px', padding: '8px 12px', borderRadius: '30px', border: '1px solid var(--border)', fontFamily: 'Inter, sans-serif', fontSize: '14px', textAlign: 'center' }} 
-                        placeholder="Срок"
-                      />
-                      <input 
-                        type="text" 
-                        value={pricesNeeds[key].price} 
-                        onChange={(e) => setPricesNeeds(prev => ({ ...prev, [key]: { ...prev[key], price: e.target.value } }))} 
-                        style={{ width: '120px', padding: '8px 12px', borderRadius: '30px', border: '1px solid var(--border)', fontFamily: 'Inter, sans-serif', fontSize: '14px', textAlign: 'center' }} 
-                        placeholder="Цена"
-                      />
-                    </div>
-                  ))}
-                </div>
-              ))
-            )}
+            <div className="panel-header"><h3>Цены недвижимость</h3><button onClick={savePriceNeeds} className="btn-save">Сохранить все цены</button></div>
+            {loadingPrices ? <div>Загрузка...</div> : Object.entries(needsCategories).map(([category, keys]) => (
+              <div key={category} className="price-card" style={{ marginBottom: '20px' }}>
+                <h4>{category}</h4>
+                {keys.map(key => pricesNeeds[key] && (
+                  <div key={key} className="file-section" style={{ justifyContent: 'space-between' }}>
+                    <span style={{ flex: 2 }}>{pricesNeeds[key].name}</span>
+                    <input type="text" value={pricesNeeds[key].term} onChange={(e) => setPricesNeeds(prev => ({ ...prev, [key]: { ...prev[key], term: e.target.value } }))} style={{ width: '130px', padding: '8px', borderRadius: '30px', border: '1px solid var(--border)', textAlign: 'center' }} />
+                    <input type="text" value={pricesNeeds[key].price} onChange={(e) => setPricesNeeds(prev => ({ ...prev, [key]: { ...prev[key], price: e.target.value } }))} style={{ width: '120px', padding: '8px', borderRadius: '30px', border: '1px solid var(--border)', textAlign: 'center' }} />
+                  </div>
+                ))}
+              </div>
+            ))}
           </div>
 
-          {/* Вкладка: Цены движимое имущество */}
+          {/* Цены движимое */}
           <div className={`cabinet-panel ${activeTab === 'prices_movable' ? 'active' : ''}`}>
-            <div className="panel-header">
-              <h3>Редактирование цен на движимое имущество</h3>
-              <button onClick={savePriceMovable} className="btn-save">Сохранить все цены</button>
-            </div>
-            {loadingPrices ? (
-              <div style={{ textAlign: 'center', padding: '20px' }}>Загрузка цен...</div>
-            ) : (
-              Object.entries(movableCategories).map(([category, keys]) => (
-                <div key={category} className="price-card" style={{ marginBottom: '20px' }}>
-                  <h4>{category}</h4>
-                  {keys.map(key => pricesMovable[key] && (
-                    <div key={key} className="file-section" style={{ justifyContent: 'space-between', marginBottom: '10px' }}>
-                      <span style={{ flex: '2', minWidth: '300px' }}>{pricesMovable[key].name}</span>
-                      <input 
-                        type="text" 
-                        value={pricesMovable[key].term} 
-                        onChange={(e) => setPricesMovable(prev => ({ ...prev, [key]: { ...prev[key], term: e.target.value } }))} 
-                        style={{ width: '130px', padding: '8px 12px', borderRadius: '30px', border: '1px solid var(--border)', fontFamily: 'Inter, sans-serif', fontSize: '14px', textAlign: 'center' }} 
-                        placeholder="Срок"
-                      />
-                      <input 
-                        type="text" 
-                        value={pricesMovable[key].price} 
-                        onChange={(e) => setPricesMovable(prev => ({ ...prev, [key]: { ...prev[key], price: e.target.value } }))} 
-                        style={{ width: '120px', padding: '8px 12px', borderRadius: '30px', border: '1px solid var(--border)', fontFamily: 'Inter, sans-serif', fontSize: '14px', textAlign: 'center' }} 
-                        placeholder="Цена"
-                      />
-                    </div>
-                  ))}
-                </div>
-              ))
-            )}
+            <div className="panel-header"><h3>Цены движимое</h3><button onClick={savePriceMovable} className="btn-save">Сохранить все цены</button></div>
+            {loadingPrices ? <div>Загрузка...</div> : Object.entries(movableCategories).map(([category, keys]) => (
+              <div key={category} className="price-card" style={{ marginBottom: '20px' }}>
+                <h4>{category}</h4>
+                {keys.map(key => pricesMovable[key] && (
+                  <div key={key} className="file-section" style={{ justifyContent: 'space-between' }}>
+                    <span style={{ flex: 2 }}>{pricesMovable[key].name}</span>
+                    <input type="text" value={pricesMovable[key].term} onChange={(e) => setPricesMovable(prev => ({ ...prev, [key]: { ...prev[key], term: e.target.value } }))} style={{ width: '130px', padding: '8px', borderRadius: '30px', border: '1px solid var(--border)', textAlign: 'center' }} />
+                    <input type="text" value={pricesMovable[key].price} onChange={(e) => setPricesMovable(prev => ({ ...prev, [key]: { ...prev[key], price: e.target.value } }))} style={{ width: '120px', padding: '8px', borderRadius: '30px', border: '1px solid var(--border)', textAlign: 'center' }} />
+                  </div>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       </main>
