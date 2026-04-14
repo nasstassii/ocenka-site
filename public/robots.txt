@@ -1,3 +1,8 @@
-# https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /cabinet
+Disallow: /profile
+Disallow: /api/
+Disallow: /uploads/   # если там хранятся документы и они не должны быть в поиске
+
+Sitemap: https://ocenka-bakalenko.ru/sitemap.xml

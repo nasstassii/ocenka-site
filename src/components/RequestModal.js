@@ -139,7 +139,6 @@ function RequestModal({ isOpen, onClose, userId, onSuccess }) {
             style={{ width: '100%', marginBottom: '16px', padding: '12px 16px', borderRadius: '20px', border: '1px solid var(--border)', fontFamily: 'Inter, sans-serif', fontSize: '14px', resize: 'vertical' }}
           />
 
-          {/* ЧЕКБОКС С СОГЛАСИЕМ НА ОБРАБОТКУ ПЕРСОНАЛЬНЫХ ДАННЫХ */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
             <input
               type="checkbox"
