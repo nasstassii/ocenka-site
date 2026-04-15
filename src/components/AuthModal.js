@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function AuthModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState('login');
@@ -13,7 +13,6 @@ function AuthModal({ isOpen, onClose }) {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState('');
-  const [passwordHint, setPasswordHint] = useState('');
   const navigate = useNavigate();
 
   const formatPhone = (value) => {
@@ -28,42 +27,17 @@ function AuthModal({ isOpen, onClose }) {
     return formatted;
   };
 
-  // Улучшенная проверка сложности пароля
   const checkPasswordStrength = (password) => {
-    if (!password) {
-      setPasswordStrength('');
-      setPasswordHint('');
-      return;
-    }
-    
+    if (!password) { setPasswordStrength(''); return; }
     let strength = 0;
-    let missing = [];
-    
     if (password.length >= 8) strength++;
-    else missing.push('минимум 8 символов');
-    
     if (password.match(/[a-z]/)) strength++;
-    else missing.push('строчные буквы (a-z)');
-    
     if (password.match(/[A-Z]/)) strength++;
-    else missing.push('заглавные буквы (A-Z)');
-    
     if (password.match(/[0-9]/)) strength++;
-    else missing.push('цифры (0-9)');
-    
     if (password.match(/[^a-zA-Z0-9]/)) strength++;
-    else missing.push('специальные символы (!@#$%^&*)');
-    
-    if (strength <= 2) {
-      setPasswordStrength('Слабый пароль');
-      setPasswordHint(`Добавьте: ${missing.join(', ')}`);
-    } else if (strength <= 4) {
-      setPasswordStrength('Средний пароль');
-      setPasswordHint(`Добавьте: ${missing.join(', ')}`);
-    } else {
-      setPasswordStrength('Надёжный пароль');
-      setPasswordHint('');
-    }
+    if (strength <= 2) setPasswordStrength('Слабый пароль');
+    else if (strength <= 4) setPasswordStrength('Средний пароль');
+    else setPasswordStrength('Надёжный пароль');
   };
 
   const handleRegPasswordChange = (e) => {
@@ -90,13 +64,10 @@ function AuthModal({ isOpen, onClose }) {
     if (!regEmail) { setError('Укажите email'); return; }
     if (!regEmail.includes('@') || !regEmail.includes('.')) { setError('Введите корректный email'); return; }
     if (!regPassword) { setError('Введите пароль'); return; }
-    
-    // Проверка сложности пароля перед отправкой
     if (regPassword.length < 8) { setError('Пароль должен быть не менее 8 символов'); return; }
     if (!regPassword.match(/[a-z]/)) { setError('Пароль должен содержать строчные буквы'); return; }
     if (!regPassword.match(/[A-Z]/)) { setError('Пароль должен содержать заглавные буквы'); return; }
     if (!regPassword.match(/[0-9]/)) { setError('Пароль должен содержать цифры'); return; }
-    
     if (!agreement) { setError('Необходимо согласие на обработку персональных данных'); return; }
 
     setIsLoading(true);
@@ -156,7 +127,7 @@ function AuthModal({ isOpen, onClose }) {
         <button onClick={onClose} className="close-auth">&times;</button>
         <div className="auth-tabs">
           <button onClick={() => { setActiveTab('login'); setError(''); }} className={`auth-tab ${activeTab === 'login' ? 'active' : ''}`}>Вход</button>
-          <button onClick={() => { setActiveTab('register'); setError(''); setPasswordStrength(''); setPasswordHint(''); }} className={`auth-tab ${activeTab === 'register' ? 'active' : ''}`}>Регистрация</button>
+          <button onClick={() => { setActiveTab('register'); setError(''); setPasswordStrength(''); }} className={`auth-tab ${activeTab === 'register' ? 'active' : ''}`}>Регистрация</button>
         </div>
         {activeTab === 'login' ? (
           <div className="auth-form active">
@@ -180,26 +151,27 @@ function AuthModal({ isOpen, onClose }) {
               />
               {passwordStrength && (
                 <div>
-                  <div style={{ 
-                    fontSize: '12px', 
-                    marginBottom: '4px',
-                    color: passwordStrength === 'Надёжный пароль' ? '#4A9E6E' : (passwordStrength === 'Средний пароль' ? '#E8A04A' : '#c44')
-                  }}>
+                  <div style={{ fontSize: '12px', color: passwordStrength === 'Надёжный пароль' ? '#4A9E6E' : (passwordStrength === 'Средний пароль' ? '#E8A04A' : '#c44') }}>
                     {passwordStrength}
                   </div>
-                  {passwordHint && (
-                    <div style={{ fontSize: '11px', color: '#A66907' }}>
-                      {passwordHint}
-                    </div>
-                  )}
                 </div>
               )}
             </div>
             
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', fontSize: '13px', cursor: 'pointer' }}>
-              <input type="checkbox" checked={agreement} onChange={(e) => setAgreement(e.target.checked)} disabled={isLoading} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
-              <span>Я соглашаюсь на <a href="#" style={{ color: 'var(--blue)' }}>обработку персональных данных</a></span>
-            </label>
+            {/* ЧЕКБОКС С СОГЛАСИЕМ НА ОБРАБОТКУ ПЕРСОНАЛЬНЫХ ДАННЫХ */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+              <input 
+                type="checkbox" 
+                id="registerAgreement"
+                checked={agreement} 
+                onChange={(e) => setAgreement(e.target.checked)} 
+                disabled={isLoading}
+                style={{ width: '18px', height: '18px', cursor: 'pointer', margin: 0 }}
+              />
+              <label htmlFor="registerAgreement" style={{ fontSize: '13px', color: 'var(--text-muted)', cursor: 'pointer', margin: 0 }}>
+                Я принимаю условия <Link to="/privacy" target="_blank" style={{ color: 'var(--blue)' }}>Политики конфиденциальности</Link> и даю согласие на обработку персональных данных
+              </label>
+            </div>
             
             <button onClick={handleRegister} disabled={isLoading} style={{ width: '100%', background: 'var(--blue)', color: 'white', border: 'none', padding: '12px', borderRadius: '30px', fontWeight: '600', cursor: 'pointer' }}>
               {isLoading ? 'Регистрация...' : 'Зарегистрироваться'}

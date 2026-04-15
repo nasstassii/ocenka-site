@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Footer() {
   const [feedbackName, setFeedbackName] = useState('');
@@ -65,6 +65,13 @@ function Footer() {
             <div className="contact-detail"><i className="fas fa-envelope"></i> <span>bakalenko-olga@yandex.ru</span></div>
             <div className="contact-detail"><i className="fas fa-map-marker-alt"></i> <span>Работаю онлайн по всей России</span></div>
             <div className="contact-detail hours"><i className="fas fa-clock"></i> <span>Пн–Пт: 9:00 – 17:00</span></div>
+            
+            {/* Ссылка на политику конфиденциальности */}
+            <div style={{ marginTop: '20px' }}>
+              <Link to="/privacy" style={{ color: 'var(--blue-light)', textDecoration: 'none', fontSize: '13px' }}>
+                Политика конфиденциальности
+              </Link>
+            </div>
           </div>
           <div className="contact-form" style={{ flex: '0.8' }}>
             <form onSubmit={handleSubmit}>
@@ -72,6 +79,7 @@ function Footer() {
               <input type="email" value={feedbackEmail} onChange={(e) => setFeedbackEmail(e.target.value)} placeholder="Ваш Email" />
               <textarea rows="3" value={feedbackMessage} onChange={(e) => setFeedbackMessage(e.target.value)} placeholder="Ваш вопрос"></textarea>
               
+              {/* ЧЕКБОКС В ФОРМЕ ОБРАТНОЙ СВЯЗИ */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
                 <input 
                   type="checkbox" 
@@ -80,8 +88,8 @@ function Footer() {
                   onChange={(e) => setFeedbackAgreement(e.target.checked)} 
                   style={{ width: '18px', height: '18px', cursor: 'pointer', margin: 0 }}
                 />
-                <label htmlFor="feedbackAgreement" style={{ fontSize: '0.8rem', color: 'var(--text-muted)', cursor: 'pointer', margin: 0 }}>
-                  Я соглашаюсь на <a href="#" style={{ color: 'var(--blue)' }}>обработку персональных данных</a>
+                <label htmlFor="feedbackAgreement" style={{ fontSize: '13px', color: 'var(--text-muted)', cursor: 'pointer', margin: 0 }}>
+                  Я принимаю условия <Link to="/privacy" target="_blank" style={{ color: 'var(--blue)' }}>Политики конфиденциальности</Link> и даю согласие на обработку персональных данных
                 </label>
               </div>
               
