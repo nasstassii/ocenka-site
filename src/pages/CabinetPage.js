@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { fetchWithAuth, fetchFormData } from '../utils/api';
 import RequestModal from '../components/RequestModal';
 import Footer from '../components/Footer';
@@ -12,6 +12,7 @@ function CabinetPage() {
   const [reviewText, setReviewText] = useState('');
   const [selectedRating, setSelectedRating] = useState(0);
   const [reviewResult, setReviewResult] = useState('');
+  const [reviewAgreement, setReviewAgreement] = useState(false);
   const [requests, setRequests] = useState([]);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -140,7 +141,18 @@ function CabinetPage() {
   };
 
   const submitReview = async () => {
-    if (!reviewText.trim()) { setReviewResult('Напишите текст отзыва'); return; }
+    if (!reviewText.trim()) {
+      setReviewResult('Напишите текст отзыва');
+      setTimeout(() => setReviewResult(''), 3000);
+      return;
+    }
+    
+    if (!reviewAgreement) {
+      setReviewResult('Необходимо согласие на обработку персональных данных');
+      setTimeout(() => setReviewResult(''), 3000);
+      return;
+    }
+    
     try {
       const response = await fetchWithAuth('/reviews', {
         method: 'POST',
@@ -151,6 +163,7 @@ function CabinetPage() {
         setReviewResult('Спасибо за ваш отзыв!');
         setReviewText('');
         setSelectedRating(0);
+        setReviewAgreement(false);
         setTimeout(() => setReviewResult(''), 3000);
       } else {
         setReviewResult('Ошибка при отправке отзыва');
@@ -160,7 +173,7 @@ function CabinetPage() {
     }
   };
 
- const uploadDocument = async (requestId, file, type) => {
+  const uploadDocument = async (requestId, file, type) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('uploaded_by', 'client');
@@ -241,7 +254,7 @@ function CabinetPage() {
     input.click();
   };
 
- const downloadFile = async (fileId, fileName) => {
+  const downloadFile = async (fileId, fileName) => {
     try {
       const response = await fetch(`http://localhost:5000/api/upload/download/${fileId}`);
       if (!response.ok) throw new Error('Ошибка загрузки файла');
@@ -338,7 +351,7 @@ function CabinetPage() {
             ))}
           </div>
 
-<div className={`cabinet-panel ${activeTab === 'review' ? 'active' : ''}`}>
+          <div className={`cabinet-panel ${activeTab === 'review' ? 'active' : ''}`}>
             <div className="panel-header">
               <h3>Оставить отзыв</h3>
             </div>
@@ -367,9 +380,25 @@ function CabinetPage() {
                 />
               ))}
             </div>
+            
+            {/* Чекбокс для согласия */}
+            <div className="checkbox-wrapper" style={{ margin: '16px 0' }}>
+              <input
+                type="checkbox"
+                id="reviewAgreement"
+                checked={reviewAgreement}
+                onChange={(e) => setReviewAgreement(e.target.checked)}
+              />
+              <label htmlFor="reviewAgreement">
+                Я принимаю условия <Link to="/privacy" target="_blank" rel="noopener noreferrer">Политики конфиденциальности</Link>
+                и даю согласие на обработку персональных данных
+              </label>
+            </div>
+            
             <button onClick={submitReview} className="btn-primary">
               Отправить отзыв
             </button>
+            
             {reviewResult && (
               <div style={{ marginTop: '16px', fontSize: '13px', color: 'var(--green)' }}>
                 {reviewResult}
@@ -392,7 +421,6 @@ function CabinetPage() {
       </main>
 
       <RequestModal isOpen={isRequestModalOpen} onClose={() => setIsRequestModalOpen(false)} userId={user.id} onSuccess={() => loadRequests(user.id)} />
-
     </>
   );
 }

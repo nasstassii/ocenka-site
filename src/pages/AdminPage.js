@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchWithAuth } from '../utils/api'; // Только для заявок
+import { fetchWithAuth } from '../utils/api';
 
 function AdminPage() {
   const [user, setUser] = useState(null);
@@ -26,12 +26,15 @@ function AdminPage() {
 
   useEffect(() => {
     const userData = sessionStorage.getItem('cabinet_user');
-    if (!userData || JSON.parse(userData).role !== 'admin') { navigate('/'); return; }
+    if (!userData || JSON.parse(userData).role !== 'admin') { 
+      navigate('/'); 
+      return; 
+    }
     setUser(JSON.parse(userData));
-    loadRequests();      // Использует fetchWithAuth (с токеном)
-    loadQualification(); // Использует обычный fetch
-    loadPrices();        // Использует обычный fetch
-    loadReviews();       // Использует обычный fetch
+    loadRequests();
+    loadQualification();
+    loadPrices();
+    loadReviews();
   }, [navigate]);
 
   // ========== ЗАЯВКИ (с токеном) ==========
@@ -202,10 +205,11 @@ function AdminPage() {
     }
   };
 
+  // ========== ОТЗЫВЫ (с авторизацией) ==========
   const deleteReview = async (reviewId) => {
     if (window.confirm('Удалить этот отзыв?')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/reviews/${reviewId}`, {
+        const response = await fetchWithAuth(`/reviews/${reviewId}`, {
           method: 'DELETE'
         });
         const data = await response.json();
@@ -280,7 +284,9 @@ function AdminPage() {
         const ext = file.name.split('.').pop().toLowerCase();
         if (['pdf', 'jpg', 'jpeg', 'png'].includes(ext)) {
           uploadAdminFile(requestId, file, type);
-        } else { alert('Допустимые форматы: PDF, JPG, PNG'); }
+        } else {
+          alert('Допустимые форматы: PDF, JPG, PNG');
+        }
       }
     };
     input.click();
@@ -439,7 +445,7 @@ function AdminPage() {
           </div>
 
           {/* Отзывы */}
-   <div className={`cabinet-panel ${activeTab === 'reviews' ? 'active' : ''}`}>
+          <div className={`cabinet-panel ${activeTab === 'reviews' ? 'active' : ''}`}>
             <div className="panel-header"><h3>Отзывы</h3></div>
             {reviews.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '20px', color: '#B8AFA0' }}>Нет отзывов</div>

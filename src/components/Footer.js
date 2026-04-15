@@ -119,7 +119,7 @@ const handleLeaveRequest = () => {
             <div className="contact-detail"><i className="fas fa-envelope"></i> <span>bakalenko-olga@yandex.ru</span></div>
             <div className="contact-detail"><i className="fas fa-map-marker-alt"></i> <span>Работаю онлайн по всей России</span></div>
             <div className="contact-detail hours"><i className="fas fa-clock"></i> <span>Пн–Пт: 9:00 – 17:00</span></div>
-            <div className="privacy-link"><Link to="/privacy">Политика конфиденциальности</Link></div>
+            <div className="privacy-link"><Link to="/privacy" target="_blank" rel="noopener noreferrer">Политика конфиденциальности</Link></div>
           </div>
           <div className="contact-form">
             <form onSubmit={handleSubmit}>
