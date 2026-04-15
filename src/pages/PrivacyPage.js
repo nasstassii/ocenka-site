@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import AuthModal from '../components/AuthModal';
 
 function PrivacyPage() {
-  const [isAuthOpen, setIsAuthOpen] = React.useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   return (
     <>
-      <Header onOpenAuth={onOpenAuth} />
+      <Header onOpenAuth={() => setIsAuthOpen(true)} />
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
       
       <section className="page-hero">
         <div className="container">
@@ -128,7 +130,7 @@ function PrivacyPage() {
         </div>
       </section>
 
-      <Footer onOpenAuth={() => setIsAuthOpen(true)}/>
+      <Footer onOpenAuth={() => setIsAuthOpen(true)} />
     </>
   );
 }
