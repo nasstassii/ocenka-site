@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { fetchPublic } from '../utils/api';
 
 function AuthModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState('login');
@@ -58,7 +59,7 @@ function AuthModal({ isOpen, onClose }) {
     setLoginEmail(e.target.value.toLowerCase().replace(/\s/g, ''));
   };
 
-  const handleRegister = async () => {
+const handleRegister = async () => {
     setError('');
     if (!regName) { setError('Укажите ФИО'); return; }
     if (!regEmail) { setError('Укажите email'); return; }
@@ -72,26 +73,34 @@ function AuthModal({ isOpen, onClose }) {
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fio: regName, email: regEmail, phone: regPhone, password: regPassword })
-      });
-      const data = await response.json();
-      if (data.success) {
-        sessionStorage.setItem('cabinet_user', JSON.stringify(data.user));
-        onClose();
-        navigate(data.user.role === 'admin' ? '/admin' : '/cabinet');
-      } else {
-        setError(data.error || 'Ошибка регистрации');
-      }
+        const response = await fetchPublic('/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({ fio: regName, email: regEmail, phone: regPhone, password: regPassword })
+        });
+        const data = await response.json();
+        
+        console.log('Регистрация ответ:', data);
+        
+        if (data.success) {
+            // СОХРАНЯЕМ ТОКЕН
+            if (data.token) {
+                localStorage.setItem('token', data.token);
+            }
+            sessionStorage.setItem('cabinet_user', JSON.stringify(data.user));
+            onClose();
+            navigate(data.user.role === 'admin' ? '/admin' : '/cabinet');
+        } else {
+            setError(data.error || 'Ошибка регистрации');
+        }
     } catch (err) {
-      setError('Не удалось подключиться к серверу');
+        console.error('Ошибка:', err);
+        setError('Не удалось подключиться к серверу');
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
 
+  // ВХОД - СОХРАНЯЕМ ТОКЕН
   const handleLogin = async () => {
     setError('');
     if (!loginEmail) { setError('Введите email'); return; }
@@ -99,13 +108,14 @@ function AuthModal({ isOpen, onClose }) {
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetchPublic('/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: loginEmail, password: loginPassword })
       });
       const data = await response.json();
+      
       if (data.success) {
+        localStorage.setItem('token', data.token);
         sessionStorage.setItem('cabinet_user', JSON.stringify(data.user));
         onClose();
         navigate(data.user.role === 'admin' ? '/admin' : '/cabinet');

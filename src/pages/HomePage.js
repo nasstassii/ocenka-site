@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ReviewsCarousel from '../components/ReviewsCarousel';
+import { fetchPublic } from '../utils/api';
 
 function HomePage({ onOpenAuth }) {
   const [heroText, setHeroText] = useState('Добро пожаловать в мою оценочную практику! Меня зовут Бакаленко Ольга, и я – профессиональный оценщик с многолетним опытом в сфере оценки имущества. Позвольте мне стать вашим надежным партнером в сфере оценки!');
@@ -13,7 +14,7 @@ function HomePage({ onOpenAuth }) {
 
   const loadReviews = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/reviews');
+      const response = await fetchPublic('/reviews');
       const data = await response.json();
       setReviews(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -33,11 +34,7 @@ function HomePage({ onOpenAuth }) {
     e.target.reset();
   };
 
-  const carouselReviews = reviews.map(r => ({
-    author: r.author,
-    text: r.text,
-    rating: r.rating
-  }));
+  const carouselReviews = reviews.map(r => ({ author: r.author, text: r.text, rating: r.rating }));
 
   return (
     <>
@@ -61,40 +58,24 @@ function HomePage({ onOpenAuth }) {
       </section>
 
       <section className="why-me">
-        <div className="container">
-          <div className="section-title"><h2>Почему выбирают меня</h2></div>
-          <div className="why-grid">
-            <div className="why-item"><div className="why-number">15 лет</div><div className="why-label">оценочной деятельности</div></div>
-            <div className="why-item"><div className="why-number">500+</div><div className="why-label">успешных отчётов</div></div>
-            <div className="why-item"><div className="why-number">100%</div><div className="why-label">принятие в судах</div></div>
-            <div className="why-item"><div className="why-number">15+</div><div className="why-label">регионов РФ</div></div>
-          </div>
-        </div>
+        <div className="container"><div className="section-title"><h2>Почему выбирают меня</h2></div>
+        <div className="why-grid">
+          <div className="why-item"><div className="why-number">15 лет</div><div className="why-label">оценочной деятельности</div></div>
+          <div className="why-item"><div className="why-number">500+</div><div className="why-label">успешных отчётов</div></div>
+          <div className="why-item"><div className="why-number">100%</div><div className="why-label">принятие в судах</div></div>
+          <div className="why-item"><div className="why-number">15+</div><div className="why-label">регионов РФ</div></div>
+        </div></div>
       </section>
 
       <section className="services">
         <div className="container">
           <div className="section-title"><h2>Услуги</h2></div>
           <div className="services-grid">
-            <div className="service-card">
-              <div className="service-img" style={{ backgroundImage: "url('build.jpg')" }}></div>
-              <h3>Оценка недвижимости</h3>
-              <p>квартиры, дома, коммерческая недвижимость, земельные участки, гаражи</p>
-            </div>
-            <div className="service-card">
-              <div className="service-img" style={{ backgroundImage: "url('car.jpg')" }}></div>
-              <h3>Оценка движимого имущества</h3>
-              <p>автотранспорт, строительная техника, оборудование, спецтехника</p>
-            </div>
-            <div className="service-card">
-              <div className="service-img" style={{ backgroundImage: "url('calc.jpg')" }}></div>
-              <h3>Оценка права пользования</h3>
-              <p>арендная плата, право пользования нежилыми помещениями</p>
-            </div>
+            <div className="service-card"><div className="service-img" style={{ backgroundImage: "url('build.jpg')" }}></div><h3>Оценка недвижимости</h3><p>квартиры, дома, коммерческая недвижимость, земельные участки, гаражи</p></div>
+            <div className="service-card"><div className="service-img" style={{ backgroundImage: "url('car.jpg')" }}></div><h3>Оценка движимого имущества</h3><p>автотранспорт, строительная техника, оборудование, спецтехника</p></div>
+            <div className="service-card"><div className="service-img" style={{ backgroundImage: "url('calc.jpg')" }}></div><h3>Оценка права пользования</h3><p>арендная плата, право пользования нежилыми помещениями</p></div>
           </div>
-          <div className="services-button">
-            <a href="/services" className="btn-primary">Подробнее об услугах <i className="fas fa-arrow-right"></i></a>
-          </div>
+          <div className="services-button"><a href="/services" className="btn-primary">Подробнее об услугах <i className="fas fa-arrow-right"></i></a></div>
         </div>
       </section>
 
@@ -104,8 +85,7 @@ function HomePage({ onOpenAuth }) {
           <div className="qualifications-grid">
             <div className="qual-left">
               <p><strong>Образование:</strong> высшее юридическое (РГЭУ «РИНХ») и профессиональная переподготовка по программе «Оценка собственности».</p>
-              <h3>Квалификационные аттестаты</h3>
-              <ul><li>Оценка недвижимости (№ 038432‑1 от 07.06.2024)</li><li>Оценка движимого имущества (№ 037098‑2 от 24.05.2024)</li></ul>
+              <h3>Квалификационные аттестаты</h3><ul><li>Оценка недвижимости (№ 038432‑1 от 07.06.2024)</li><li>Оценка движимого имущества (№ 037098‑2 от 24.05.2024)</li></ul>
               <h3>Членство в СРО</h3><p>Ассоциация СРО «Национальная коллегия специалистов-оценщиков», регистрационный номер 02082 от 29.07.2011 г.</p>
               <h3>Страхование ответственности</h3><p>СПАО «Ингосстрах», полис № 433-589-116108/25, сумма 300 000 ₽</p>
             </div>
@@ -122,10 +102,7 @@ function HomePage({ onOpenAuth }) {
       </section>
 
       <section className="reviews" id="reviews">
-        <div className="container">
-          <div className="section-title"><h2>Отзывы</h2></div>
-          <ReviewsCarousel reviews={carouselReviews} />
-        </div>
+        <div className="container"><div className="section-title"><h2>Отзывы</h2></div><ReviewsCarousel reviews={carouselReviews} /></div>
       </section>
       
       <Footer />

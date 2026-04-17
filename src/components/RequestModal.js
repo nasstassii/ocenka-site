@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { fetchWithAuth } from '../utils/api';
 
 function RequestModal({ isOpen, onClose, userId, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ function RequestModal({ isOpen, onClose, userId, onSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
     if (!formData.name) { setError('Укажите название объекта'); return; }
     if (!formData.client_type) { setError('Укажите тип заказчика'); return; }
     if (!formData.project_type) { setError('Укажите объект оценки'); return; }
@@ -24,9 +26,8 @@ function RequestModal({ isOpen, onClose, userId, onSuccess }) {
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/requests', {
+      const response = await fetchWithAuth('/requests', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           users_id_user: userId,
           name: formData.name,
@@ -37,7 +38,9 @@ function RequestModal({ isOpen, onClose, userId, onSuccess }) {
           description: formData.description
         })
       });
+      
       const data = await response.json();
+      
       if (data.success) {
         onSuccess();
         onClose();
@@ -46,7 +49,8 @@ function RequestModal({ isOpen, onClose, userId, onSuccess }) {
         setError(data.error || 'Ошибка создания заявки');
       }
     } catch (err) {
-      setError('Ошибка подключения к серверу');
+      console.error('Ошибка:', err);
+      setError('Ошибка подключения к серверу. Проверьте, запущен ли бэкенд.');
     } finally {
       setIsLoading(false);
     }

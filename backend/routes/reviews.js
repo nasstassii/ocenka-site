@@ -1,15 +1,13 @@
 const express = require('express');
 const db = require('../db');
+const { authMiddleware, adminOnly } = require('../middleware/auth');
 
 const router = express.Router();
 
-// ПОЛУЧИТЬ ВСЕ ОТЗЫВЫ (последние 10)
 router.get('/', async (req, res) => {
     try {
         const [reviews] = await db.query(`
-            SELECT 
-                r.*, 
-                u.fio as author 
+            SELECT r.*, u.fio as author 
             FROM reviews r
             JOIN users u ON r.users_id_user = u.id_user
             ORDER BY r.created_at DESC
@@ -22,9 +20,12 @@ router.get('/', async (req, res) => {
     }
 });
 
-// ДОБАВИТЬ НОВЫЙ ОТЗЫВ
-router.post('/', async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
     const { users_id_user, text, rating } = req.body;
+    
+    if (req.user.id != users_id_user && req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Доступ запрещён' });
+    }
 
     try {
         const [result] = await db.query(
@@ -38,8 +39,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// УДАЛИТЬ ОТЗЫВ (ДОБАВЛЕНО ДЛЯ АДМИНА)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMiddleware, adminOnly, async (req, res) => {
     const { id } = req.params;
 
     try {

@@ -12,17 +12,14 @@ if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Настройка multer для правильной обработки русских имён
+// ПРОСТАЯ НАСТРОЙКА MULTER - БЕЗ КОДИРОВОК
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
-        // Получаем имя файла в правильной кодировке
-        const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
-        // Заменяем пробелы на подчеркивания
-        const safeName = originalName.replace(/\s/g, '_');
-        const uniqueName = Date.now() + '_' + safeName;
+        // Просто добавляем timestamp и сохраняем оригинальное имя
+        const uniqueName = Date.now() + '_' + file.originalname;
         cb(null, uniqueName);
     }
 });
@@ -51,8 +48,7 @@ router.post('/:requestId/:type', upload.single('file'), async (req, res) => {
 
     try {
         const filePath = req.file.filename;
-        // Получаем оригинальное имя файла в правильной кодировке
-        const fileName = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
+        const fileName = req.file.originalname;
 
         const [requests] = await db.query(
             `SELECT r.*, u.fio as client_name, u.email as client_email, u.phone as client_phone
@@ -117,7 +113,7 @@ router.get('/:requestId/:type', async (req, res) => {
     }
 });
 
-// Скачать файл
+// Скачать файл - ПРОСТАЯ ВЕРСИЯ
 router.get('/download/:fileId', async (req, res) => {
     const { fileId } = req.params;
 
@@ -135,12 +131,8 @@ router.get('/download/:fileId', async (req, res) => {
             return res.status(404).json({ error: 'Файл не найден на сервере' });
         }
         
-        // Отправляем файл с правильным русским именем
-        res.setHeader('Content-Type', 'application/octet-stream');
-        res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.file_name)}`);
-        
-        const fileStream = fs.createReadStream(filePath);
-        fileStream.pipe(res);
+        // САМЫЙ ПРОСТОЙ СПОСОБ - отправить файл напрямую
+        res.download(filePath, file.file_name);
         
     } catch (error) {
         console.error('Ошибка скачивания файла:', error);

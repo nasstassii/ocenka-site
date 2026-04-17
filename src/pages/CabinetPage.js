@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchWithAuth, fetchFormData } from '../utils/api';
 import RequestModal from '../components/RequestModal';
+import Footer from '../components/Footer';
 
 function CabinetPage() {
   const [user, setUser] = useState(null);
@@ -17,7 +19,6 @@ function CabinetPage() {
   const [uploadingType, setUploadingType] = useState(null);
   const [files, setFiles] = useState({});
   
-  // Состояния для смены пароля
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -44,7 +45,7 @@ function CabinetPage() {
   const loadRequests = async (userId) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/requests/user/${userId}`);
+      const response = await fetchWithAuth(`/requests/user/${userId}`);
       const data = await response.json();
       setRequests(Array.isArray(data) ? data : []);
       
@@ -78,9 +79,8 @@ function CabinetPage() {
 
   const saveProfile = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/update', {
+      const response = await fetchWithAuth('/auth/update', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: user.id, fio: profileName, phone: profilePhone })
       });
       const data = await response.json();
@@ -97,58 +97,23 @@ function CabinetPage() {
     }
   };
 
-  // Смена пароля с проверкой сложности
   const changePassword = async () => {
     setPasswordError('');
     setPasswordSuccess('');
     
-    if (!oldPassword) {
-      setPasswordError('Введите текущий пароль');
-      return;
-    }
-    if (!newPassword) {
-      setPasswordError('Введите новый пароль');
-      return;
-    }
-    
-    // Проверка сложности нового пароля
-    if (newPassword.length < 8) {
-      setPasswordError('Пароль должен быть не менее 8 символов');
-      return;
-    }
-    if (!newPassword.match(/[a-z]/)) {
-      setPasswordError('Пароль должен содержать строчные буквы (a-z)');
-      return;
-    }
-    if (!newPassword.match(/[A-Z]/)) {
-      setPasswordError('Пароль должен содержать заглавные буквы (A-Z)');
-      return;
-    }
-    if (!newPassword.match(/[0-9]/)) {
-      setPasswordError('Пароль должен содержать цифры (0-9)');
-      return;
-    }
-    
-    if (newPassword !== confirmPassword) {
-      setPasswordError('Новый пароль и подтверждение не совпадают');
-      return;
-    }
+    if (!oldPassword) { setPasswordError('Введите текущий пароль'); return; }
+    if (!newPassword) { setPasswordError('Введите новый пароль'); return; }
+    if (newPassword.length < 8) { setPasswordError('Пароль должен быть не менее 8 символов'); return; }
+    if (newPassword !== confirmPassword) { setPasswordError('Новый пароль и подтверждение не совпадают'); return; }
     
     setIsChangingPassword(true);
     
     try {
-      const response = await fetch('http://localhost:5000/api/auth/change-password', {
+      const response = await fetchWithAuth('/auth/change-password', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.id,
-          oldPassword: oldPassword,
-          newPassword: newPassword
-        })
+        body: JSON.stringify({ userId: user.id, oldPassword, newPassword })
       });
-      
       const data = await response.json();
-      
       if (data.success) {
         setPasswordSuccess('Пароль успешно изменён');
         setOldPassword('');
@@ -169,19 +134,16 @@ function CabinetPage() {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
     sessionStorage.removeItem('cabinet_user');
     navigate('/');
   };
 
   const submitReview = async () => {
-    if (!reviewText.trim()) {
-      setReviewResult('Напишите текст отзыва');
-      return;
-    }
+    if (!reviewText.trim()) { setReviewResult('Напишите текст отзыва'); return; }
     try {
-      const response = await fetch('http://localhost:5000/api/reviews', {
+      const response = await fetchWithAuth('/reviews', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ users_id_user: user.id, text: reviewText, rating: selectedRating || 5 })
       });
       const data = await response.json();
@@ -198,7 +160,7 @@ function CabinetPage() {
     }
   };
 
-  const uploadDocument = async (requestId, file, type) => {
+ const uploadDocument = async (requestId, file, type) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('uploaded_by', 'client');
@@ -230,9 +192,7 @@ function CabinetPage() {
   const deleteFile = async (fileId, requestId) => {
     if (window.confirm('Удалить этот файл?')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/upload/${fileId}`, {
-          method: 'DELETE'
-        });
+        const response = await fetchWithAuth(`/upload/${fileId}`, { method: 'DELETE' });
         const data = await response.json();
         if (data.success) {
           alert('Файл удалён');
@@ -249,9 +209,7 @@ function CabinetPage() {
   const deleteRequest = async (id) => {
     if (window.confirm('Вы уверены? Заявка и все файлы будут удалены безвозвратно.')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/requests/${id}`, {
-          method: 'DELETE'
-        });
+        const response = await fetchWithAuth(`/requests/${id}`, { method: 'DELETE' });
         const data = await response.json();
         if (data.success) {
           alert('Заявка удалена');
@@ -283,7 +241,7 @@ function CabinetPage() {
     input.click();
   };
 
-  const downloadFile = async (fileId, fileName) => {
+ const downloadFile = async (fileId, fileName) => {
     try {
       const response = await fetch(`http://localhost:5000/api/upload/download/${fileId}`);
       if (!response.ok) throw new Error('Ошибка загрузки файла');
@@ -303,13 +261,7 @@ function CabinetPage() {
   };
 
   const getStatusText = (status) => {
-    const map = {
-      new: 'Новая',
-      work: 'В работе',
-      waiting_docs: 'Ожидает документов',
-      waiting_payment: 'Ожидает оплаты',
-      report_ready: 'Завершено'
-    };
+    const map = { new: 'Новая', work: 'В работе', waiting_docs: 'Ожидает документов', waiting_payment: 'Ожидает оплаты', report_ready: 'Завершено' };
     return map[status] || status;
   };
 
@@ -319,254 +271,74 @@ function CabinetPage() {
     <>
       <div className="cabinet-header">
         <div className="container header-inner">
-          <div className="logo-cabinet">
-            <a href="/">Ольга Бакаленко</a>
-            <span>личный кабинет клиента</span>
-          </div>
+          <div className="logo-cabinet"><a href="/">Ольга Бакаленко</a><span>личный кабинет клиента</span></div>
           <div className="user-info">
             <span className="user-email">{user.email}</span>
-            <button className="logout-btn" onClick={handleLogout}>
-              <i className="fas fa-sign-out-alt"></i> Выйти
-            </button>
-            <a href="/" className="back-link">
-              <i className="fas fa-arrow-left"></i> На сайт
-            </a>
+            <button className="logout-btn" onClick={handleLogout}><i className="fas fa-sign-out-alt"></i> Выйти</button>
+            <a href="/" className="back-link"><i className="fas fa-arrow-left"></i> На сайт</a>
           </div>
         </div>
       </div>
 
       <main className="cabinet-main">
         <div className="container">
-          <div className="page-title">
-            <h1>Личный кабинет</h1>
-          </div>
+          <div className="page-title"><h1>Личный кабинет</h1></div>
 
           <div className="profile-section">
-  <h3>Редактирование профиля</h3>
-  <div className="profile-form-row">
-    <input
-      type="text"
-      className="name-input"
-      value={profileName}
-      onChange={(e) => setProfileName(e.target.value)}
-      placeholder="Ваше ФИО"
-    />
-    <input
-      type="tel"
-      className="phone-input"
-      value={profilePhone}
-      onChange={(e) => setProfilePhone(e.target.value)}
-      placeholder="+7 (___) ___-__-__"
-    />
-    <button onClick={saveProfile} className="btn-save-profile">
-      Сохранить изменения
-    </button>
-    
-    {!showPasswordForm ? (
-      <button onClick={() => setShowPasswordForm(true)} className="btn-change-password">
-        <i className="fas fa-key"></i> Сменить пароль
-      </button>
-    ) : (
-      <button onClick={() => setShowPasswordForm(false)} className="btn-change-password-cancel">
-        <i className="fas fa-times"></i> Отмена
-      </button>
-    )}
-  </div>
-
-  {showPasswordForm && (
-    <div className="password-change-form">
-      <div className="password-change-row">
-        <input
-          type="password"
-          className="password-input"
-          value={oldPassword}
-          onChange={(e) => setOldPassword(e.target.value)}
-          placeholder="Текущий пароль"
-          disabled={isChangingPassword}
-        />
-        <input
-          type="password"
-          className="password-input"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          placeholder="Новый пароль"
-          disabled={isChangingPassword}
-        />
-        <input
-          type="password"
-          className="password-input-confirm"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder="Подтвердите"
-          disabled={isChangingPassword}
-        />
-        <button onClick={changePassword} className="btn-save-password" disabled={isChangingPassword}>
-          {isChangingPassword ? '...' : 'Сохранить'}
-        </button>
-      </div>
-      {passwordError && <div className="password-error">{passwordError}</div>}
-      {passwordSuccess && <div className="password-success">{passwordSuccess}</div>}
-    </div>
-  )}
-</div>
-
-          <div className="cabinet-tabs">
-            <button
-              className={`tab-btn ${activeTab === 'requests' ? 'active' : ''}`}
-              onClick={() => setActiveTab('requests')}
-            >
-              Мои заявки
-            </button>
-            <button
-              className={`tab-btn ${activeTab === 'review' ? 'active' : ''}`}
-              onClick={() => setActiveTab('review')}
-            >
-              Оставить отзыв
-            </button>
-            <button
-              className={`tab-btn ${activeTab === 'contract' ? 'active' : ''}`}
-              onClick={() => setActiveTab('contract')}
-            >
-              Договор
-            </button>
-          </div>
-
-          <div className={`cabinet-panel ${activeTab === 'requests' ? 'active' : ''}`}>
-            <div className="panel-header">
-              <h3>Мои заявки</h3>
-              <button className="add-btn" onClick={() => setIsRequestModalOpen(true)}>
-                + Новая заявка
-              </button>
+            <h3>Редактирование профиля</h3>
+            <div className="profile-form-row">
+              <input type="text" className="name-input" value={profileName} onChange={(e) => setProfileName(e.target.value)} placeholder="Ваше ФИО" />
+              <input type="tel" className="phone-input" value={profilePhone} onChange={(e) => setProfilePhone(e.target.value)} placeholder="Телефон" />
+              <button onClick={saveProfile} className="btn-save-profile">Сохранить изменения</button>
+              {!showPasswordForm ? (
+                <button onClick={() => setShowPasswordForm(true)} className="btn-change-password"><i className="fas fa-key"></i> Сменить пароль</button>
+              ) : (
+                <button onClick={() => setShowPasswordForm(false)} className="btn-change-password-cancel"><i className="fas fa-times"></i> Отмена</button>
+              )}
             </div>
-            {isLoading ? (
-              <div style={{ textAlign: 'center', padding: '20px' }}>Загрузка...</div>
-            ) : requests.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '20px', color: '#B8AFA0' }}>
-                У вас пока нет заявок.
-              </div>
-            ) : (
-              requests.map(req => (
-                <div key={req.id_req} className="request-card">
-                  <div className="request-header">
-                    <span className="request-object">{req.name}</span>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                      <span className="status" data-status={req.status}>
-                        {getStatusText(req.status)}
-                      </span>
-                      <button
-                        onClick={() => deleteRequest(req.id_req)}
-                        className="delete-request-btn"
-                        title="Удалить заявку"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  </div>
-                  <div className="request-details">
-                    <p><strong>Дата:</strong> {new Date(req.created_at).toLocaleDateString()}</p>
-                    <p><strong>Заказчик:</strong> {req.client_type}</p>
-                    <p><strong>Объект оценки:</strong> {req.project_type}</p>
-                    <p><strong>Ограничения:</strong> {req.has_restrictions ? 'Да' : 'Нет'}</p>
-                    <p><strong>Цель оценки:</strong> {req.purpose}</p>
-                    <p><strong>Описание:</strong> {req.description || '—'}</p>
-                    {req.admin_comment && (
-                      <div className="admin-comment">
-                        <strong>Комментарий оценщика:</strong> {req.admin_comment}
-                      </div>
-                    )}
-
-                    <div className="file-section">
-                      <span>Мои документы:</span>
-                      {files[req.id_req]?.client_doc?.map((file) => (
-                        <div key={file.id_doc} className="file-item">
-                          <span
-                            className="file-name"
-                            onClick={() => downloadFile(file.id_doc, file.file_name)}
-                          >
-                            {file.file_name}
-                          </span>
-                          <button
-                            className="delete-file"
-                            onClick={() => deleteFile(file.id_doc, req.id_req)}
-                            title="Удалить"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
-                      <button
-                        className="file-btn"
-                        onClick={() => handleFileSelect(req.id_req, 'client_doc')}
-                        disabled={uploadingId === req.id_req}
-                      >
-                        <i className="fas fa-upload"></i>
-                        {uploadingId === req.id_req && uploadingType === 'client_doc' ? 'Загрузка...' : 'Загрузить документ'}
-                      </button>
-                    </div>
-
-                    <div className="file-section">
-                      <span>Договор (от оценщика):</span>
-                      {files[req.id_req]?.contract?.map((file) => (
-                        <div key={file.id_doc} className="file-item">
-                          <span
-                            className="file-name"
-                            onClick={() => downloadFile(file.id_doc, file.file_name)}
-                          >
-                            {file.file_name}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="file-section">
-                      <span>Подписанный договор (от клиента):</span>
-                      {files[req.id_req]?.contract_signed?.map((file) => (
-                        <div key={file.id_doc} className="file-item">
-                          <span
-                            className="file-name"
-                            onClick={() => downloadFile(file.id_doc, file.file_name)}
-                          >
-                            {file.file_name}
-                          </span>
-                          <button
-                            className="delete-file"
-                            onClick={() => deleteFile(file.id_doc, req.id_req)}
-                            title="Удалить"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
-                      <button
-                        className="file-btn"
-                        onClick={() => handleFileSelect(req.id_req, 'contract_signed')}
-                        disabled={uploadingId === req.id_req}
-                      >
-                        <i className="fas fa-upload"></i>
-                        {uploadingId === req.id_req && uploadingType === 'contract_signed' ? 'Загрузка...' : 'Загрузить подписанный договор'}
-                      </button>
-                    </div>
-
-                    <div className="file-section">
-                      <span>Итоговый отчёт:</span>
-                      {files[req.id_req]?.report?.map((file) => (
-                        <div key={file.id_doc} className="file-item">
-                          <span
-                            className="file-name"
-                            onClick={() => downloadFile(file.id_doc, file.file_name)}
-                          >
-                            {file.file_name}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+            {showPasswordForm && (
+              <div className="password-change-form">
+                <div className="password-change-row">
+                  <input type="password" className="password-input" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} placeholder="Текущий пароль" disabled={isChangingPassword} />
+                  <input type="password" className="password-input" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Новый пароль" disabled={isChangingPassword} />
+                  <input type="password" className="password-input-confirm" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Подтвердите" disabled={isChangingPassword} />
+                  <button onClick={changePassword} className="btn-save-password" disabled={isChangingPassword}>{isChangingPassword ? '...' : 'Сохранить'}</button>
                 </div>
-              ))
+                {passwordError && <div className="password-error">{passwordError}</div>}
+                {passwordSuccess && <div className="password-success">{passwordSuccess}</div>}
+              </div>
             )}
           </div>
 
-          <div className={`cabinet-panel ${activeTab === 'review' ? 'active' : ''}`}>
+          <div className="cabinet-tabs">
+            <button className={`tab-btn ${activeTab === 'requests' ? 'active' : ''}`} onClick={() => setActiveTab('requests')}>Мои заявки</button>
+            <button className={`tab-btn ${activeTab === 'review' ? 'active' : ''}`} onClick={() => setActiveTab('review')}>Оставить отзыв</button>
+            <button className={`tab-btn ${activeTab === 'contract' ? 'active' : ''}`} onClick={() => setActiveTab('contract')}>Договор</button>
+          </div>
+
+          <div className={`cabinet-panel ${activeTab === 'requests' ? 'active' : ''}`}>
+            <div className="panel-header"><h3>Мои заявки</h3><button className="add-btn" onClick={() => setIsRequestModalOpen(true)}>+ Новая заявка</button></div>
+            {isLoading ? <div className="loading-spinner">Загрузка...</div> : requests.length === 0 ? <div style={{ textAlign: 'center', padding: '20px', color: '#B8AFA0' }}>У вас пока нет заявок.</div> : requests.map(req => (
+              <div key={req.id_req} className="request-card">
+                <div className="request-header"><span className="request-object">{req.name}</span><div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}><span className="status" data-status={req.status}>{getStatusText(req.status)}</span><button onClick={() => deleteRequest(req.id_req)} className="delete-request-btn">✕</button></div></div>
+                <div className="request-details">
+                  <p><strong>Дата:</strong> {new Date(req.created_at).toLocaleDateString()}</p>
+                  <p><strong>Заказчик:</strong> {req.client_type}</p>
+                  <p><strong>Объект оценки:</strong> {req.project_type}</p>
+                  <p><strong>Ограничения:</strong> {req.has_restrictions ? 'Да' : 'Нет'}</p>
+                  <p><strong>Цель оценки:</strong> {req.purpose}</p>
+                  <p><strong>Описание:</strong> {req.description || '—'}</p>
+                  {req.admin_comment && <div className="admin-comment"><strong>Комментарий оценщика:</strong> {req.admin_comment}</div>}
+                  <div className="file-section"><span>Мои документы:</span>{files[req.id_req]?.client_doc?.map((file) => (<div key={file.id_doc} className="file-item"><span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span><button className="delete-file" onClick={() => deleteFile(file.id_doc, req.id_req)}>✕</button></div>))}<button className="file-btn" onClick={() => handleFileSelect(req.id_req, 'client_doc')} disabled={uploadingId === req.id_req}><i className="fas fa-upload"></i> Загрузить документ</button></div>
+                  <div className="file-section"><span>Договор (от оценщика):</span>{files[req.id_req]?.contract?.map((file) => (<div key={file.id_doc} className="file-item"><span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span></div>))}</div>
+                  <div className="file-section"><span>Подписанный договор (от клиента):</span>{files[req.id_req]?.contract_signed?.map((file) => (<div key={file.id_doc} className="file-item"><span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span><button className="delete-file" onClick={() => deleteFile(file.id_doc, req.id_req)}>✕</button></div>))}<button className="file-btn" onClick={() => handleFileSelect(req.id_req, 'contract_signed')} disabled={uploadingId === req.id_req}><i className="fas fa-upload"></i> Загрузить подписанный договор</button></div>
+                  <div className="file-section"><span>Итоговый отчёт:</span>{files[req.id_req]?.report?.map((file) => (<div key={file.id_doc} className="file-item"><span className="file-name" onClick={() => downloadFile(file.id_doc, file.file_name)}>{file.file_name}</span></div>))}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+<div className={`cabinet-panel ${activeTab === 'review' ? 'active' : ''}`}>
             <div className="panel-header">
               <h3>Оставить отзыв</h3>
             </div>
@@ -619,12 +391,8 @@ function CabinetPage() {
         </div>
       </main>
 
-      <RequestModal
-        isOpen={isRequestModalOpen}
-        onClose={() => setIsRequestModalOpen(false)}
-        userId={user.id}
-        onSuccess={() => loadRequests(user.id)}
-      />
+      <RequestModal isOpen={isRequestModalOpen} onClose={() => setIsRequestModalOpen(false)} userId={user.id} onSuccess={() => loadRequests(user.id)} />
+
     </>
   );
 }

@@ -3,10 +3,12 @@ const path = require('path');
 const fs = require('fs');
 const db = require('../db');
 const { sendToAdmin, sendToClient } = require('../config/mailer');
+const { authMiddleware, adminOnly } = require('../middleware/auth');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+// ПОЛУЧИТЬ ВСЕ ЗАЯВКИ (только админ)
+router.get('/', authMiddleware, adminOnly, async (req, res) => {
     try {
         const [requests] = await db.query(`
             SELECT r.*, u.fio as client_name, u.email as client_email, u.phone as client_phone
@@ -21,8 +23,14 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/user/:userId', async (req, res) => {
+// ПОЛУЧИТЬ ЗАЯВКИ ПОЛЬЗОВАТЕЛЯ
+router.get('/user/:userId', authMiddleware, async (req, res) => {
     const { userId } = req.params;
+    
+    if (req.user.id != userId && req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Доступ запрещён' });
+    }
+    
     try {
         const [requests] = await db.query(
             'SELECT * FROM requests WHERE users_id_user = ? ORDER BY created_at DESC',
@@ -35,8 +43,13 @@ router.get('/user/:userId', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+// СОЗДАТЬ ЗАЯВКУ
+router.post('/', authMiddleware, async (req, res) => {
     const { users_id_user, name, client_type, project_type, has_restrictions, purpose, description } = req.body;
+    
+    if (req.user.id != users_id_user && req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Доступ запрещён' });
+    }
 
     try {
         const [result] = await db.query(
@@ -68,7 +81,8 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.put('/:id/status', async (req, res) => {
+// ОБНОВИТЬ СТАТУС (только админ)
+router.put('/:id/status', authMiddleware, adminOnly, async (req, res) => {
     const { id } = req.params;
     const { status, admin_comment } = req.body;
 
@@ -102,7 +116,8 @@ router.put('/:id/status', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+// УДАЛИТЬ ЗАЯВКУ (только админ)
+router.delete('/:id', authMiddleware, adminOnly, async (req, res) => {
     const { id } = req.params;
 
     try {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchWithAuth } from '../utils/api'; // Только для заявок
 
 function AdminPage() {
   const [user, setUser] = useState(null);
@@ -13,12 +14,7 @@ function AdminPage() {
   const [editingStatuses, setEditingStatuses] = useState({});
   
   const [qualTexts, setQualTexts] = useState({
-    welcome_text: '',
-    qual_list: '',
-    education: '',
-    law: '',
-    valuation_objects: '',
-    valuation_purposes: ''
+    welcome_text: '', qual_list: '', education: '', law: '', valuation_objects: '', valuation_purposes: ''
   });
   
   const [pricesNeeds, setPricesNeeds] = useState({});
@@ -30,21 +26,19 @@ function AdminPage() {
 
   useEffect(() => {
     const userData = sessionStorage.getItem('cabinet_user');
-    if (!userData || JSON.parse(userData).role !== 'admin') {
-      navigate('/');
-      return;
-    }
+    if (!userData || JSON.parse(userData).role !== 'admin') { navigate('/'); return; }
     setUser(JSON.parse(userData));
-    loadRequests();
-    loadQualification();
-    loadPrices();
-    loadReviews();
+    loadRequests();      // Использует fetchWithAuth (с токеном)
+    loadQualification(); // Использует обычный fetch
+    loadPrices();        // Использует обычный fetch
+    loadReviews();       // Использует обычный fetch
   }, [navigate]);
 
+  // ========== ЗАЯВКИ (с токеном) ==========
   const loadRequests = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/requests');
+      const response = await fetchWithAuth('/requests');
       const data = await response.json();
       setAllRequests(Array.isArray(data) ? data : []);
       
@@ -82,6 +76,36 @@ function AdminPage() {
     }
   };
 
+  const updateRequestStatus = async (id, status, admin_comment) => {
+    try {
+      await fetchWithAuth(`/requests/${id}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ status, admin_comment })
+      });
+      loadRequests();
+    } catch (err) {
+      console.error('Ошибка обновления:', err);
+    }
+  };
+
+  const deleteRequest = async (id) => {
+    if (window.confirm('Вы уверены? Заявка и все файлы будут удалены безвозвратно.')) {
+      try {
+        const response = await fetchWithAuth(`/requests/${id}`, { method: 'DELETE' });
+        const data = await response.json();
+        if (data.success) {
+          alert('Заявка удалена');
+          loadRequests();
+        } else {
+          alert('Ошибка удаления');
+        }
+      } catch (err) {
+        alert('Ошибка подключения к серверу');
+      }
+    }
+  };
+
+  // ========== КОНТЕНТ (обычный fetch) ==========
   const loadQualification = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/content/qual/all');
@@ -197,38 +221,7 @@ function AdminPage() {
     }
   };
 
-  const updateRequestStatus = async (id, status, admin_comment) => {
-    try {
-      await fetch(`http://localhost:5000/api/requests/${id}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status, admin_comment })
-      });
-      loadRequests();
-    } catch (err) {
-      console.error('Ошибка обновления:', err);
-    }
-  };
-
-  const deleteRequest = async (id) => {
-    if (window.confirm('Вы уверены? Заявка и все файлы будут удалены безвозвратно.')) {
-      try {
-        const response = await fetch(`http://localhost:5000/api/requests/${id}`, {
-          method: 'DELETE'
-        });
-        const data = await response.json();
-        if (data.success) {
-          alert('Заявка удалена');
-          loadRequests();
-        } else {
-          alert('Ошибка удаления');
-        }
-      } catch (err) {
-        alert('Ошибка подключения к серверу');
-      }
-    }
-  };
-
+  // ========== ФАЙЛЫ ==========
   const uploadAdminFile = async (requestId, file, type) => {
     const formData = new FormData();
     formData.append('file', file);
@@ -287,9 +280,7 @@ function AdminPage() {
         const ext = file.name.split('.').pop().toLowerCase();
         if (['pdf', 'jpg', 'jpeg', 'png'].includes(ext)) {
           uploadAdminFile(requestId, file, type);
-        } else {
-          alert('Допустимые форматы: PDF, JPG, PNG');
-        }
+        } else { alert('Допустимые форматы: PDF, JPG, PNG'); }
       }
     };
     input.click();
@@ -315,18 +306,13 @@ function AdminPage() {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
     sessionStorage.removeItem('cabinet_user');
     navigate('/');
   };
 
   const getStatusText = (status) => {
-    const map = {
-      new: 'Новая',
-      work: 'В работе',
-      waiting_docs: 'Ожидает документов',
-      waiting_payment: 'Ожидает оплаты',
-      report_ready: 'Завершено'
-    };
+    const map = { new: 'Новая', work: 'В работе', waiting_docs: 'Ожидает документов', waiting_payment: 'Ожидает оплаты', report_ready: 'Завершено' };
     return map[status] || status;
   };
 
@@ -351,35 +337,25 @@ function AdminPage() {
     <>
       <div className="cabinet-header">
         <div className="container header-inner">
-          <div className="logo-cabinet">
-            <a href="/">Ольга Бакаленко</a>
-            <span>админ-панель</span>
-          </div>
+          <div className="logo-cabinet"><a href="/">Ольга Бакаленко</a><span>админ-панель</span></div>
           <div className="user-info">
             <span className="user-email">{user.email}</span>
-            <button className="logout-btn" onClick={handleLogout}>
-              <i className="fas fa-sign-out-alt"></i> Выйти
-            </button>
-            <a href="/" className="back-link">
-              <i className="fas fa-arrow-left"></i> На сайт
-            </a>
+            <button className="logout-btn" onClick={handleLogout}><i className="fas fa-sign-out-alt"></i> Выйти</button>
+            <a href="/" className="back-link"><i className="fas fa-arrow-left"></i> На сайт</a>
           </div>
         </div>
       </div>
 
       <main className="cabinet-main">
         <div className="container">
-          <div className="page-title">
-            <h1>Админ-панель</h1>
-            <p>Управление заявками, контентом и отзывами</p>
-          </div>
+          <div className="page-title"><h1>Админ-панель</h1><p>Управление заявками, контентом и отзывами</p></div>
 
           <div className="cabinet-tabs">
             <button className={`tab-btn ${activeTab === 'requests' ? 'active' : ''}`} onClick={() => setActiveTab('requests')}>Заявки</button>
-            <button className={`tab-btn ${activeTab === 'content' ? 'active' : ''}`} onClick={() => setActiveTab('content')}>Квалификация</button>
+            <button className={`tab-btn ${activeTab === 'qualification' ? 'active' : ''}`} onClick={() => setActiveTab('qualification')}>Квалификация</button>
             <button className={`tab-btn ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => setActiveTab('reviews')}>Отзывы</button>
-            <button className={`tab-btn ${activeTab === 'prices_needs' ? 'active' : ''}`} onClick={() => setActiveTab('prices_needs')}>Цены недвижимость</button>
-            <button className={`tab-btn ${activeTab === 'prices_movable' ? 'active' : ''}`} onClick={() => setActiveTab('prices_movable')}>Цены движимое</button>
+            <button className={`tab-btn ${activeTab === 'prices_needs' ? 'active' : ''}`} onClick={() => setActiveTab('prices_needs')}>Цены (недвижимость)</button>
+            <button className={`tab-btn ${activeTab === 'prices_movable' ? 'active' : ''}`} onClick={() => setActiveTab('prices_movable')}>Цены (движимое)</button>
           </div>
 
           {/* Заявки */}
@@ -451,43 +427,19 @@ function AdminPage() {
             )}
           </div>
 
-          {/* Контент - квалификация */}
-          <div className={`cabinet-panel ${activeTab === 'content' ? 'active' : ''}`}>
-            <div className="panel-header"><h3>Квалификация</h3></div>
-            <div className="content-editor">
-              <h4>Приветственный текст</h4>
-              <textarea rows="3" value={qualTexts.welcome_text} onChange={(e) => setQualTexts({ ...qualTexts, welcome_text: e.target.value })}></textarea>
-              <button onClick={() => saveQualContent('welcome_text')}>Сохранить</button>
-            </div>
-            <div className="content-editor">
-              <h4>Список квалификации</h4>
-              <textarea rows="6" value={qualTexts.qual_list} onChange={(e) => setQualTexts({ ...qualTexts, qual_list: e.target.value })}></textarea>
-              <button onClick={() => saveQualContent('qual_list')}>Сохранить</button>
-            </div>
-            <div className="content-editor">
-              <h4>Образование</h4>
-              <textarea rows="2" value={qualTexts.education} onChange={(e) => setQualTexts({ ...qualTexts, education: e.target.value })}></textarea>
-              <button onClick={() => saveQualContent('education')}>Сохранить</button>
-            </div>
-            <div className="content-editor">
-              <h4>Законодательство</h4>
-              <textarea rows="2" value={qualTexts.law} onChange={(e) => setQualTexts({ ...qualTexts, law: e.target.value })}></textarea>
-              <button onClick={() => saveQualContent('law')}>Сохранить</button>
-            </div>
-            <div className="content-editor">
-              <h4>Объекты оценки</h4>
-              <textarea rows="2" value={qualTexts.valuation_objects} onChange={(e) => setQualTexts({ ...qualTexts, valuation_objects: e.target.value })}></textarea>
-              <button onClick={() => saveQualContent('valuation_objects')}>Сохранить</button>
-            </div>
-            <div className="content-editor">
-              <h4>Цели оценки</h4>
-              <textarea rows="2" value={qualTexts.valuation_purposes} onChange={(e) => setQualTexts({ ...qualTexts, valuation_purposes: e.target.value })}></textarea>
-              <button onClick={() => saveQualContent('valuation_purposes')}>Сохранить</button>
-            </div>
+          {/* Квалификация */}
+          <div className={`cabinet-panel ${activeTab === 'qualification' ? 'active' : ''}`}>
+            <div className="panel-header"><h3>Редактирование страницы квалификации</h3></div>
+            <div className="content-editor"><h4>Приветственный текст</h4><textarea rows="3" value={qualTexts.welcome_text} onChange={(e) => setQualTexts({ ...qualTexts, welcome_text: e.target.value })}></textarea><button onClick={() => saveQualContent('welcome_text')}>Сохранить</button></div>
+            <div className="content-editor"><h4>Список квалификации</h4><textarea rows="6" value={qualTexts.qual_list} onChange={(e) => setQualTexts({ ...qualTexts, qual_list: e.target.value })}></textarea><button onClick={() => saveQualContent('qual_list')}>Сохранить</button></div>
+            <div className="content-editor"><h4>Образование</h4><textarea rows="2" value={qualTexts.education} onChange={(e) => setQualTexts({ ...qualTexts, education: e.target.value })}></textarea><button onClick={() => saveQualContent('education')}>Сохранить</button></div>
+            <div className="content-editor"><h4>Законодательство</h4><textarea rows="2" value={qualTexts.law} onChange={(e) => setQualTexts({ ...qualTexts, law: e.target.value })}></textarea><button onClick={() => saveQualContent('law')}>Сохранить</button></div>
+            <div className="content-editor"><h4>Объекты оценки</h4><textarea rows="2" value={qualTexts.valuation_objects} onChange={(e) => setQualTexts({ ...qualTexts, valuation_objects: e.target.value })}></textarea><button onClick={() => saveQualContent('valuation_objects')}>Сохранить</button></div>
+            <div className="content-editor"><h4>Цели оценки</h4><textarea rows="2" value={qualTexts.valuation_purposes} onChange={(e) => setQualTexts({ ...qualTexts, valuation_purposes: e.target.value })}></textarea><button onClick={() => saveQualContent('valuation_purposes')}>Сохранить</button></div>
           </div>
 
           {/* Отзывы */}
-          <div className={`cabinet-panel ${activeTab === 'reviews' ? 'active' : ''}`}>
+   <div className={`cabinet-panel ${activeTab === 'reviews' ? 'active' : ''}`}>
             <div className="panel-header"><h3>Отзывы</h3></div>
             {reviews.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '20px', color: '#B8AFA0' }}>Нет отзывов</div>
@@ -510,13 +462,13 @@ function AdminPage() {
 
           {/* Цены недвижимость */}
           <div className={`cabinet-panel ${activeTab === 'prices_needs' ? 'active' : ''}`}>
-            <div className="panel-header"><h3>Цены недвижимость</h3><button onClick={savePriceNeeds} className="btn-save">Сохранить все цены</button></div>
-            {loadingPrices ? <div>Загрузка...</div> : Object.entries(needsCategories).map(([category, keys]) => (
+            <div className="panel-header"><h3>Редактирование цен на недвижимость</h3><button onClick={savePriceNeeds} className="btn-save">Сохранить все цены</button></div>
+            {loadingPrices ? <div className="loading-spinner">Загрузка цен...</div> : Object.entries(needsCategories).map(([category, keys]) => (
               <div key={category} className="price-card" style={{ marginBottom: '20px' }}>
                 <h4>{category}</h4>
                 {keys.map(key => pricesNeeds[key] && (
                   <div key={key} className="file-section" style={{ justifyContent: 'space-between' }}>
-                    <span style={{ flex: 2 }}>{pricesNeeds[key].name}</span>
+                    <span style={{ flex: '2' }}>{pricesNeeds[key].name}</span>
                     <input type="text" value={pricesNeeds[key].term} onChange={(e) => setPricesNeeds(prev => ({ ...prev, [key]: { ...prev[key], term: e.target.value } }))} style={{ width: '130px', padding: '8px', borderRadius: '30px', border: '1px solid var(--border)', textAlign: 'center' }} />
                     <input type="text" value={pricesNeeds[key].price} onChange={(e) => setPricesNeeds(prev => ({ ...prev, [key]: { ...prev[key], price: e.target.value } }))} style={{ width: '120px', padding: '8px', borderRadius: '30px', border: '1px solid var(--border)', textAlign: 'center' }} />
                   </div>
@@ -525,15 +477,15 @@ function AdminPage() {
             ))}
           </div>
 
-          {/* Цены движимое */}
+          {/* Цены движимое имущество */}
           <div className={`cabinet-panel ${activeTab === 'prices_movable' ? 'active' : ''}`}>
-            <div className="panel-header"><h3>Цены движимое</h3><button onClick={savePriceMovable} className="btn-save">Сохранить все цены</button></div>
-            {loadingPrices ? <div>Загрузка...</div> : Object.entries(movableCategories).map(([category, keys]) => (
+            <div className="panel-header"><h3>Редактирование цен на движимое имущество</h3><button onClick={savePriceMovable} className="btn-save">Сохранить все цены</button></div>
+            {loadingPrices ? <div className="loading-spinner">Загрузка цен...</div> : Object.entries(movableCategories).map(([category, keys]) => (
               <div key={category} className="price-card" style={{ marginBottom: '20px' }}>
                 <h4>{category}</h4>
                 {keys.map(key => pricesMovable[key] && (
                   <div key={key} className="file-section" style={{ justifyContent: 'space-between' }}>
-                    <span style={{ flex: 2 }}>{pricesMovable[key].name}</span>
+                    <span style={{ flex: '2' }}>{pricesMovable[key].name}</span>
                     <input type="text" value={pricesMovable[key].term} onChange={(e) => setPricesMovable(prev => ({ ...prev, [key]: { ...prev[key], term: e.target.value } }))} style={{ width: '130px', padding: '8px', borderRadius: '30px', border: '1px solid var(--border)', textAlign: 'center' }} />
                     <input type="text" value={pricesMovable[key].price} onChange={(e) => setPricesMovable(prev => ({ ...prev, [key]: { ...prev[key], price: e.target.value } }))} style={{ width: '120px', padding: '8px', borderRadius: '30px', border: '1px solid var(--border)', textAlign: 'center' }} />
                   </div>
