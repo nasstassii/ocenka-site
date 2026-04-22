@@ -5,4 +5,4 @@ Disallow: /profile
 Disallow: /api/
 Disallow: /uploads/   # если там хранятся документы и они не должны быть в поиске
 
-Sitemap: https://ocenka-bakalenko.ru/sitemap.xml
+Sitemap: http://localhost:5000/sitemap.xml
