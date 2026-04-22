@@ -81,7 +81,7 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 });
 
-// ОБНОВИТЬ СТАТУС (только админ)
+// ОБНОВИТЬ СТАТУС
 router.put('/:id/status', authMiddleware, adminOnly, async (req, res) => {
     const { id } = req.params;
     const { status, admin_comment } = req.body;
@@ -116,7 +116,7 @@ router.put('/:id/status', authMiddleware, adminOnly, async (req, res) => {
     }
 });
 
-// УДАЛИТЬ ЗАЯВКУ (только админ)
+// УДАЛИТЬ ЗАЯВКУ
 router.delete('/:id', authMiddleware, adminOnly, async (req, res) => {
     const { id } = req.params;
 
