@@ -23,12 +23,14 @@ const requestsRoutes = require('./routes/requests');
 const reviewsRoutes = require('./routes/reviews');
 const contentRoutes = require('./routes/content');
 const uploadRoutes = require('./routes/upload');
+const feedbackRoutes = require('./routes/feedback');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/requests', requestsRoutes);
 app.use('/api/reviews', reviewsRoutes);
 app.use('/api/content', contentRoutes); 
 app.use('/api/upload', uploadRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'Сервер работает!' });

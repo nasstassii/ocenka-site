@@ -7,6 +7,8 @@ function Footer() {
   const [feedbackMessage, setFeedbackMessage] = useState('');
   const [feedbackAgreement, setFeedbackAgreement] = useState(false);
   const [feedbackResult, setFeedbackResult] = useState('');
+  const [feedbackResultClass, setFeedbackResultClass] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLeaveRequest = () => {
@@ -23,22 +25,77 @@ function Footer() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!feedbackName || !feedbackEmail) {
-      setFeedbackResult('Укажите имя и email');
-      setTimeout(() => setFeedbackResult(''), 3000);
+    
+    // Валидация
+    if (!feedbackName.trim()) {
+      setFeedbackResultClass('error');
+      setFeedbackResult('Укажите ваше имя');
+      setTimeout(() => { setFeedbackResult(''); setFeedbackResultClass(''); }, 3000);
+      return;
+    }
+    if (!feedbackEmail.trim()) {
+      setFeedbackResultClass('error');
+      setFeedbackResult('Укажите ваш email');
+      setTimeout(() => { setFeedbackResult(''); setFeedbackResultClass(''); }, 3000);
+      return;
+    }
+    if (!feedbackEmail.includes('@') || !feedbackEmail.includes('.')) {
+      setFeedbackResultClass('error');
+      setFeedbackResult('Введите корректный email');
+      setTimeout(() => { setFeedbackResult(''); setFeedbackResultClass(''); }, 3000);
+      return;
+    }
+    if (!feedbackMessage.trim()) {
+      setFeedbackResultClass('error');
+      setFeedbackResult('Напишите ваш вопрос');
+      setTimeout(() => { setFeedbackResult(''); setFeedbackResultClass(''); }, 3000);
       return;
     }
     if (!feedbackAgreement) {
+      setFeedbackResultClass('error');
       setFeedbackResult('Необходимо согласие на обработку персональных данных');
-      setTimeout(() => setFeedbackResult(''), 3000);
+      setTimeout(() => { setFeedbackResult(''); setFeedbackResultClass(''); }, 3000);
       return;
     }
-    setFeedbackResult('Спасибо! Ваш вопрос отправлен.');
-    setFeedbackName('');
-    setFeedbackEmail('');
-    setFeedbackMessage('');
-    setFeedbackAgreement(false);
-    setTimeout(() => setFeedbackResult(''), 3000);
+
+    setIsLoading(true);
+    setFeedbackResult('');
+    setFeedbackResultClass('');
+
+    try {
+      const response = await fetch('http://localhost:5000/api/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: feedbackName,
+          email: feedbackEmail,
+          message: feedbackMessage,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setFeedbackResultClass('success');
+        setFeedbackResult('Спасибо! Ваш вопрос отправлен.');
+        setFeedbackName('');
+        setFeedbackEmail('');
+        setFeedbackMessage('');
+        setFeedbackAgreement(false);
+      } else {
+        setFeedbackResultClass('error');
+        setFeedbackResult(data.error || 'Ошибка отправки');
+      }
+    } catch (err) {
+      console.error('Ошибка:', err);
+      setFeedbackResultClass('error');
+      setFeedbackResult('Ошибка подключения к серверу');
+    } finally {
+      setIsLoading(false);
+      setTimeout(() => { setFeedbackResult(''); setFeedbackResultClass(''); }, 3000);
+    }
   };
 
   return (
@@ -64,16 +121,50 @@ function Footer() {
           </div>
           <div className="contact-form">
             <form onSubmit={handleSubmit}>
-              <input type="text" value={feedbackName} onChange={(e) => setFeedbackName(e.target.value)} placeholder="Ваше имя" />
-              <input type="email" value={feedbackEmail} onChange={(e) => setFeedbackEmail(e.target.value)} placeholder="Ваш Email" />
-              <textarea rows="3" value={feedbackMessage} onChange={(e) => setFeedbackMessage(e.target.value)} placeholder="Ваш вопрос"></textarea>
+              <input 
+                type="text" 
+                value={feedbackName} 
+                onChange={(e) => setFeedbackName(e.target.value)} 
+                placeholder="Ваше имя *" 
+                disabled={isLoading}
+              />
+              <input 
+                type="email" 
+                value={feedbackEmail} 
+                onChange={(e) => setFeedbackEmail(e.target.value)} 
+                placeholder="Ваш Email *" 
+                disabled={isLoading}
+              />
+              <textarea 
+                rows="3" 
+                value={feedbackMessage} 
+                onChange={(e) => setFeedbackMessage(e.target.value)} 
+                placeholder="Ваш вопрос *"
+                disabled={isLoading}
+              ></textarea>
               <div className="checkbox-wrapper">
-                <input type="checkbox" id="feedbackAgreement" checked={feedbackAgreement} onChange={(e) => setFeedbackAgreement(e.target.checked)} />
-                <label htmlFor="feedbackAgreement">Я принимаю условия <Link to="/privacy" target="_blank">Политики конфиденциальности</Link> и даю согласие на обработку персональных данных</label>
+                <input 
+                  type="checkbox" 
+                  id="feedbackAgreement" 
+                  checked={feedbackAgreement} 
+                  onChange={(e) => setFeedbackAgreement(e.target.checked)} 
+                  disabled={isLoading}
+                />
+                <label htmlFor="feedbackAgreement">
+                  Я принимаю условия <Link to="/privacy" target="_blank">Политики конфиденциальности</Link> 
+                  и даю согласие на обработку персональных данных
+                </label>
               </div>
-              <button type="submit">Отправить вопрос <i className="fas fa-arrow-right"></i></button>
+              <button type="submit" disabled={isLoading}>
+                {isLoading ? 'Отправка...' : 'Отправить вопрос'}
+                <i className="fas fa-arrow-right"></i>
+              </button>
             </form>
-            {feedbackResult && <div className="feedback-result">{feedbackResult}</div>}
+            {feedbackResult && (
+              <div className={`feedback-result ${feedbackResultClass}`}>
+                {feedbackResult}
+              </div>
+            )}
           </div>
         </div>
       </section>
