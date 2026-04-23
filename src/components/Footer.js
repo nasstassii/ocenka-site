@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
-function Footer() {
+function Footer({ onOpenAuth }) {
   const [feedbackName, setFeedbackName] = useState('');
   const [feedbackEmail, setFeedbackEmail] = useState('');
   const [feedbackMessage, setFeedbackMessage] = useState('');
@@ -11,17 +11,19 @@ function Footer() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLeaveRequest = () => {
-    const user = sessionStorage.getItem('cabinet_user');
-    if (user) {
-      const userData = JSON.parse(user);
-      if (userData.role === 'admin') navigate('/admin');
-      else navigate('/cabinet');
+const handleLeaveRequest = () => {
+  const user = sessionStorage.getItem('cabinet_user');
+  if (user) {
+    const userData = JSON.parse(user);
+    if (userData.role === 'admin') {
+      navigate('/admin');
     } else {
-      const openAuthBtn = document.querySelector('.btn-open-auth');
-      if (openAuthBtn) openAuthBtn.click();
+      navigate('/cabinet');
     }
-  };
+  } else {
+    onOpenAuth(); 
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();

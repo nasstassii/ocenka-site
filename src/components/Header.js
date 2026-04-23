@@ -1,8 +1,31 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 function Header({ onOpenAuth }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleReviewsClick = (e) => {
+    e.preventDefault();
+    const currentPath = location.pathname;
+    
+    if (currentPath === '/') {
+      const reviewsSection = document.getElementById('reviews');
+      if (reviewsSection) {
+        reviewsSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      navigate('/#reviews');
+    }
+  };
+
+  const handleContactsClick = (e) => {
+    e.preventDefault();
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const handleCabinetClick = (e) => {
     e.preventDefault();
@@ -15,7 +38,7 @@ function Header({ onOpenAuth }) {
         navigate('/cabinet');
       }
     } else {
-      onOpenAuth();
+      onOpenAuth(); // Вызываем функцию открытия модалки
     }
   };
 
@@ -32,12 +55,12 @@ function Header({ onOpenAuth }) {
           <li><Link to="/">Главная</Link></li>
           <li><Link to="/services">Услуги и цены</Link></li>
           <li><Link to="/qualifications">Квалификационные документы</Link></li>
-          <li><a href="/#reviews">Отзывы</a></li>
-          <li><a href="/#contact">Контакты</a></li>
+          <li><a href="#" onClick={handleReviewsClick}>Отзывы</a></li>
+          <li><a href="#" onClick={handleContactsClick}>Контакты</a></li>
           <li>
             <button 
               onClick={handleCabinetClick} 
-              className="btn-cabinet btn-open-auth"
+              className="btn-cabinet"
               style={{ background: 'var(--blue)', color: 'white', border: 'none' }}
             >
               <i className="fas fa-user-lock"></i> Личный кабинет

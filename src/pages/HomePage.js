@@ -1,16 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ReviewsCarousel from '../components/ReviewsCarousel';
 import { fetchPublic } from '../utils/api';
 
 function HomePage({ onOpenAuth }) {
+  const location = useLocation();
   const [heroText, setHeroText] = useState('Добро пожаловать в мою оценочную практику! Меня зовут Бакаленко Ольга, и я – профессиональный оценщик с многолетним опытом в сфере оценки имущества. Позвольте мне стать вашим надежным партнером в сфере оценки!');
   const [reviews, setReviews] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     loadReviews();
-  }, []);
+    
+    // Проверяем якорь в URL при загрузке страницы
+    if (location.hash === '#reviews') {
+      setTimeout(() => {
+        const reviewsSection = document.getElementById('reviews');
+        if (reviewsSection) {
+          reviewsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 200);
+    }
+  }, [location.hash]);
 
   const loadReviews = async () => {
     try {
@@ -20,18 +32,6 @@ function HomePage({ onOpenAuth }) {
     } catch (err) {
       console.error('Ошибка загрузки отзывов:', err);
     }
-  };
-
-  const handleQuestionSubmit = (e) => {
-    e.preventDefault();
-    const name = e.target.name.value.trim();
-    const email = e.target.email.value.trim();
-    if (!name || !email) {
-      alert('Укажите имя и email');
-      return;
-    }
-    alert('Спасибо! Ваш вопрос отправлен.');
-    e.target.reset();
   };
 
   const carouselReviews = reviews.map(r => ({ author: r.author, text: r.text, rating: r.rating }));
@@ -58,13 +58,15 @@ function HomePage({ onOpenAuth }) {
       </section>
 
       <section className="why-me">
-        <div className="container"><div className="section-title"><h2>Почему выбирают меня</h2></div>
-        <div className="why-grid">
-          <div className="why-item"><div className="why-number">15 лет</div><div className="why-label">оценочной деятельности</div></div>
-          <div className="why-item"><div className="why-number">500+</div><div className="why-label">успешных отчётов</div></div>
-          <div className="why-item"><div className="why-number">100%</div><div className="why-label">принятие в судах</div></div>
-          <div className="why-item"><div className="why-number">15+</div><div className="why-label">регионов РФ</div></div>
-        </div></div>
+        <div className="container">
+          <div className="section-title"><h2>Почему выбирают меня</h2></div>
+          <div className="why-grid">
+            <div className="why-item"><div className="why-number">15 лет</div><div className="why-label">оценочной деятельности</div></div>
+            <div className="why-item"><div className="why-number">500+</div><div className="why-label">успешных отчётов</div></div>
+            <div className="why-item"><div className="why-number">100%</div><div className="why-label">принятие в судах</div></div>
+            <div className="why-item"><div className="why-number">15+</div><div className="why-label">регионов РФ</div></div>
+          </div>
+        </div>
       </section>
 
       <section className="services">
@@ -101,11 +103,14 @@ function HomePage({ onOpenAuth }) {
         </div>
       </section>
 
-      <section className="reviews" id="reviews">
-        <div className="container"><div className="section-title"><h2>Отзывы</h2></div><ReviewsCarousel reviews={carouselReviews} /></div>
+      <section id="reviews" className="reviews">
+        <div className="container">
+          <div className="section-title"><h2>Отзывы</h2></div>
+          <ReviewsCarousel reviews={carouselReviews} />
+        </div>
       </section>
       
-      <Footer />
+      <Footer onOpenAuth={onOpenAuth} />
     </>
   );
 }

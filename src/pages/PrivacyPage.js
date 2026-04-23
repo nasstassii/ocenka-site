@@ -7,7 +7,7 @@ function PrivacyPage() {
 
   return (
     <>
-      <Header onOpenAuth={() => setIsAuthOpen(true)} />
+      <Header onOpenAuth={onOpenAuth} />
       
       <section className="page-hero">
         <div className="container">
@@ -128,7 +128,7 @@ function PrivacyPage() {
         </div>
       </section>
 
-      <Footer />
+      <Footer onOpenAuth={() => setIsAuthOpen(true)}/>
     </>
   );
 }

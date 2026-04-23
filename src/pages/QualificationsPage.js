@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import AuthModal from '../components/AuthModal';
 
 function QualificationsPage() {
   const [content, setContent] = useState({});
@@ -37,11 +38,19 @@ function QualificationsPage() {
     document.body.removeChild(link);
   };
 
-  if (loading) return <div className="loading-spinner">Загрузка...</div>;
+  if (loading) return (
+    <>
+      <Header onOpenAuth={() => setIsAuthOpen(true)} />
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+      <div className="loading-spinner">Загрузка...</div>
+      <Footer onOpenAuth={() => setIsAuthOpen(true)} />
+    </>
+  );
 
   return (
     <>
       <Header onOpenAuth={() => setIsAuthOpen(true)} />
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
       
       <section className="page-hero">
         <div className="container">
@@ -96,7 +105,7 @@ function QualificationsPage() {
         </div>
       </section>
 
-      <Footer />
+      <Footer onOpenAuth={() => setIsAuthOpen(true)} />
     </>
   );
 }

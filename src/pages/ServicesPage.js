@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import AuthModal from '../components/AuthModal';
 
 function ServicesPage() {
   const [pricesNeeds, setPricesNeeds] = useState({});
@@ -31,8 +32,9 @@ function ServicesPage() {
     return (
       <>
         <Header onOpenAuth={() => setIsAuthOpen(true)} />
+        <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
         <div className="loading-spinner">Загрузка цен...</div>
-        <Footer />
+        <Footer onOpenAuth={() => setIsAuthOpen(true)} />
       </>
     );
   }
@@ -40,6 +42,7 @@ function ServicesPage() {
   return (
     <>
       <Header onOpenAuth={() => setIsAuthOpen(true)} />
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
       
       <section className="page-hero">
         <div className="container">
@@ -351,7 +354,7 @@ function ServicesPage() {
         </div>
       </section>
 
-      <Footer />
+      <Footer onOpenAuth={() => setIsAuthOpen(true)} />
     </>
   );
 }
