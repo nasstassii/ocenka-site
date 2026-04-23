@@ -358,7 +358,7 @@ function CabinetPage() {
             <textarea
               value={reviewText}
               onChange={(e) => setReviewText(e.target.value)}
-              rows="4"
+              rows="3"
               placeholder="Напишите ваш отзыв о работе оценщика..."
               style={{
                 width: '100%',
