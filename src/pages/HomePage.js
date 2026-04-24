@@ -34,7 +34,11 @@ function HomePage({ onOpenAuth }) {
     }
   };
 
-  const carouselReviews = reviews.map(r => ({ author: r.author, text: r.text, rating: r.rating }));
+const carouselReviews = reviews.map(r => ({ 
+  author: r.author, 
+  text: r.text, 
+  rating: r.rating 
+}));
 
   return (
     <>

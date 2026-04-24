@@ -472,3 +472,26 @@
   padding: 8px 24px;
   font-size: 13px;
 }
+
+/* ===== ОТЗЫВЫ В АДМИНКЕ (перенос длинного текста) ===== */
+.cabinet-panel .request-card {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.cabinet-panel .request-details p {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.cabinet-panel .request-details p strong {
+  display: inline-block;
+  min-width: 60px;
+}
+
+/* Длинный текст отзыва в админке */
+.cabinet-panel .request-details p:last-of-type {
+  max-width: 100%;
+  overflow-x: auto;
+}
