@@ -407,16 +407,19 @@ function CabinetPage() {
           </div>
 
           <div className={`cabinet-panel ${activeTab === 'contract' ? 'active' : ''}`}>
-            <div className="panel-header">
-              <h3>Договор на оказание оценочных услуг</h3>
-            </div>
-            <p style={{ marginBottom: '24px' }}>
-              Здесь вы можете ознакомиться с шаблоном договора
-            </p>
-            <button className="btn-primary">
-              <i className="fas fa-download"></i> Скачать договор
-            </button>
-          </div>
+  <div className="panel-header">
+    <h3>Договор на оказание оценочных услуг</h3>
+  </div>
+  <p style={{ marginBottom: '24px' }}>
+    Здесь вы можете ознакомиться с шаблонами договора и задания на оценку
+  </p>
+  <button 
+    className="btn-primary" 
+    onClick={() => window.open('/documents/Договор_шаблон.pdf', '_blank')}
+  >
+    <i className="fas fa-download"></i> Посмотреть шаблон
+  </button>
+</div>
         </div>
       </main>
 

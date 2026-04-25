@@ -82,25 +82,25 @@ function QualificationsPage() {
           <div className="welcome-card">
             <h3>Документы</h3>
             <div className="docs-block">
-              <div className="doc-simple">
-                <span className="doc-name">Квалификационный аттестат — Оценка недвижимости (№ 038432-1)</span>
-                <button onClick={() => downloadFile('/documents/2. Бакаленко О.М. недвижимость 2024-06-07.pdf', 'Бакаленко О.М. недвижимость 2024-06-07.pdf')} className="doc-link-btn">
-                  Скачать PDF
-                </button>
-              </div>
-              <div className="doc-simple">
-                <span className="doc-name">Квалификационный аттестат — Оценка движимого имущества (№ 037098-2)</span>
-                <button onClick={() => downloadFile('/documents/3. Бакаленко О.М. движимое имущ. 2024-05-24.pdf', 'Бакаленко О.М. движимое имущество 2024-05-24.pdf')} className="doc-link-btn">
-                  Скачать PDF
-                </button>
-              </div>
-              <div className="doc-simple">
-                <span className="doc-name">Свидетельство СРО «НКСО» (рег. № 02082)</span>
-                <button onClick={() => downloadFile('/documents/1. Свидетельство НКСО.png', 'Свидетельство НКСО.png')} className="doc-link-btn">
-                  Скачать PNG
-                </button>
-              </div>
-            </div>
+  <div className="doc-simple">
+    <span className="doc-name">Квалификационный аттестат — Оценка недвижимости (№ 038432-1)</span>
+    <button onClick={() => window.open('/documents/Аттестат_недвижимость.pdf', '_blank')} className="doc-link-btn">
+      Открыть PDF
+    </button>
+  </div>
+  <div className="doc-simple">
+    <span className="doc-name">Квалификационный аттестат — Оценка движимого имущества (№ 037098-2)</span>
+    <button onClick={() => window.open('/documents/Аттестат_движимое.pdf', '_blank')} className="doc-link-btn">
+      Открыть PDF
+    </button>
+  </div>
+  <div className="doc-simple">
+    <span className="doc-name">Свидетельство СРО «НКСО» (рег. № 02082)</span>
+    <button onClick={() => window.open('/documents/Свидетельство_НКСО.pdf', '_blank')} className="doc-link-btn">
+      Открыть PNG
+    </button>
+  </div>
+</div>
           </div>
         </div>
       </section>
