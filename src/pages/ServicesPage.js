@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import AuthModal from '../components/AuthModal';
@@ -8,10 +8,32 @@ function ServicesPage() {
   const [pricesMovable, setPricesMovable] = useState({});
   const [loading, setLoading] = useState(true);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  
+  const realEstateRef = useRef(null);
+  const movableRef = useRef(null);
 
   useEffect(() => {
     loadPrices();
   }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      const hash = window.location.hash;
+      
+      setTimeout(() => {
+        if (hash === '#real-estate' && realEstateRef.current) {
+          realEstateRef.current.scrollIntoView({ behavior: 'smooth' });
+        } else if (hash === '#movable' && movableRef.current) {
+          movableRef.current.scrollIntoView({ behavior: 'smooth' });
+        } else if (hash === '#rent-right') {
+          const rentRightElement = document.getElementById('rent-right');
+          if (rentRightElement) {
+            rentRightElement.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      }, 100);
+    }
+  }, [loading]);
 
   const loadPrices = async () => {
     try {
@@ -58,7 +80,7 @@ function ServicesPage() {
           </div>
 
           {/* Оценка недвижимости */}
-          <div className="price-card">
+          <div id="real-estate" ref={realEstateRef} className="price-card">
             <h3>Оценка недвижимости</h3>
             <table className="price-table">
               <thead>
@@ -215,7 +237,7 @@ function ServicesPage() {
                   </tr>
                 )}
 
-                <tr className="section-header">
+                <tr id="rent-right" className="section-header">
                   <td colSpan="3"><strong>Права пользования</strong></td>
                 </tr>
                 {pricesNeeds.rent_right && (
@@ -234,7 +256,7 @@ function ServicesPage() {
           </div>
 
           {/* Оценка движимого имущества */}
-          <div className="price-card">
+          <div id="movable" ref={movableRef} className="price-card">
             <h3>Оценка движимого имущества</h3>
             <table className="price-table">
               <thead>
