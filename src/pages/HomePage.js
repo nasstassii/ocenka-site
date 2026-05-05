@@ -34,15 +34,11 @@ function HomePage({ onOpenAuth }) {
     }
   };
 
-const carouselReviews = reviews.map(r => ({ 
-  author: r.author, 
-  text: r.text, 
-  rating: r.rating 
-}));
-
-  const handleServiceClick = (anchor) => {
-    window.location.href = `/services#${anchor}`;
-  };
+  const carouselReviews = reviews.map(r => ({ 
+    author: r.author, 
+    text: r.text, 
+    rating: r.rating 
+  }));
 
   return (
     <>
@@ -81,21 +77,9 @@ const carouselReviews = reviews.map(r => ({
         <div className="container">
           <div className="section-title"><h2>Услуги</h2></div>
           <div className="services-grid">
-            <div className="service-card" onClick={() => handleServiceClick('real-estate')} style={{ cursor: 'pointer' }}>
-              <div className="service-img" style={{ backgroundImage: "url('build.jpg')" }}></div>
-              <h3>Оценка недвижимости</h3>
-              <p>квартиры, дома, коммерческая недвижимость, земельные участки, гаражи</p>
-            </div>
-            <div className="service-card" onClick={() => handleServiceClick('movable')} style={{ cursor: 'pointer' }}>
-              <div className="service-img" style={{ backgroundImage: "url('car.jpg')" }}></div>
-              <h3>Оценка движимого имущества</h3>
-              <p>автотранспорт, строительная техника, оборудование, спецтехника</p>
-            </div>
-            <div className="service-card" onClick={() => handleServiceClick('rent-right')} style={{ cursor: 'pointer' }}>
-              <div className="service-img" style={{ backgroundImage: "url('calc.jpg')" }}></div>
-              <h3>Оценка права пользования</h3>
-              <p>арендная плата, право пользования нежилыми помещениями</p>
-            </div>
+            <div className="service-card"><div className="service-img" style={{ backgroundImage: "url('build.jpg')" }}></div><h3>Оценка недвижимости</h3><p>квартиры, дома, коммерческая недвижимость, земельные участки, гаражи</p></div>
+            <div className="service-card"><div className="service-img" style={{ backgroundImage: "url('car.jpg')" }}></div><h3>Оценка движимого имущества</h3><p>автотранспорт, строительная техника, оборудование, спецтехника</p></div>
+            <div className="service-card"><div className="service-img" style={{ backgroundImage: "url('calc.jpg')" }}></div><h3>Оценка права пользования</h3><p>арендная плата, право пользования нежилыми помещениями</p></div>
           </div>
           <div className="services-button"><a href="/services" className="btn-primary">Подробнее об услугах <i className="fas fa-arrow-right"></i></a></div>
         </div>
@@ -109,7 +93,7 @@ const carouselReviews = reviews.map(r => ({
               <p><strong>Образование:</strong> высшее юридическое (РГЭУ «РИНХ») и профессиональная переподготовка по программе «Оценка собственности».</p>
               <h3>Квалификационные аттестаты</h3><ul><li>Оценка недвижимости (№ 038432‑1 от 07.06.2024)</li><li>Оценка движимого имущества (№ 037098‑2 от 24.05.2024)</li></ul>
               <h3>Членство в СРО</h3><p>Ассоциация СРО «Национальная коллегия специалистов-оценщиков», регистрационный номер 02082 от 29.07.2011 г.</p>
-              <h3>Страхование ответственности</h3><p>СПАО «Ингосстрах», полис № 433-589-116108/25</p>
+              <h3>Страхование ответственности</h3><p>СПАО «Ингосстрах», полис № 433-589-116108/25, сумма 300 000 ₽</p>
             </div>
             <div className="qual-right">
               <div className="doc-badge"><i className="fas fa-graduation-cap"></i><span>Диплом юриста</span></div>

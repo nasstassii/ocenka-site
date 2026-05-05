@@ -246,11 +246,6 @@
   background: var(--blue-bg);
 }
 
-.reviews-empty {
-  text-align: center;
-  padding: 20px;
-}
-
 .reviews-container {
   position: relative;
   padding: 0 80px;
@@ -277,20 +272,12 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  height: auto;
-  min-height: 210px;
-}
-
-/* Развернутая карточка */
-.review-card.expanded {
-  height: auto;
-  min-height: auto;
 }
 
 .review-card .stars {
   color: var(--star-active);
   font-size: 16px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   flex-shrink: 0;
 }
 
@@ -305,31 +292,12 @@
   flex: 1;
 }
 
-/* Кнопка "Читать дальше" в той же строке */
-.read-more-btn {
-  background: none;
-  border: none;
-  color: var(--blue);
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 0;
-  margin-left: 6px;
-  font-family: 'Inter', sans-serif;
-  white-space: nowrap;
-  display: inline;
-}
-
-.read-more-btn:hover {
-  text-decoration: underline;
-}
-
 .review-author {
   font-weight: 600;
   color: var(--blue);
   font-size: 14px;
   flex-shrink: 0;
-  margin-top: 4px;
+  margin-top: 12px;
 }
 
 .review-slider-btn {
@@ -353,10 +321,6 @@
 
 .review-slider-btn:hover:not(:disabled) {
   background: var(--blue-dark);
-}
-
-.review-slider-btn.disabled {
-  opacity: 0.4;
 }
 
 .review-slider-btn:disabled {
