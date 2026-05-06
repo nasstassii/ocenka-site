@@ -117,7 +117,7 @@ router.put('/:id/status', authMiddleware, adminOnly, async (req, res) => {
 });
 
 // УДАЛИТЬ ЗАЯВКУ
-router.delete('/:id', authMiddleware, adminOnly, async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
     const { id } = req.params;
 
     try {

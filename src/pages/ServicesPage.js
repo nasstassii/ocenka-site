@@ -11,6 +11,7 @@ function ServicesPage() {
   
   const realEstateRef = useRef(null);
   const movableRef = useRef(null);
+  const rentRightRef = useRef(null);
 
   useEffect(() => {
     loadPrices();
@@ -25,11 +26,8 @@ function ServicesPage() {
           realEstateRef.current.scrollIntoView({ behavior: 'smooth' });
         } else if (hash === '#movable' && movableRef.current) {
           movableRef.current.scrollIntoView({ behavior: 'smooth' });
-        } else if (hash === '#rent-right') {
-          const rentRightElement = document.getElementById('rent-right');
-          if (rentRightElement) {
-            rentRightElement.scrollIntoView({ behavior: 'smooth' });
-          }
+        } else if (hash === '#rent-right' && rentRightRef.current) {
+          rentRightRef.current.scrollIntoView({ behavior: 'smooth' });
         }
       }, 100);
     }
@@ -237,7 +235,7 @@ function ServicesPage() {
                   </tr>
                 )}
 
-                <tr id="rent-right" className="section-header">
+                <tr id="rent-right" ref={rentRightRef} className="section-header">
                   <td colSpan="3"><strong>Права пользования</strong></td>
                 </tr>
                 {pricesNeeds.rent_right && (

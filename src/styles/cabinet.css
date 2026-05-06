@@ -286,7 +286,7 @@
 }
 
 .admin-comment {
-  background: #f9fcff;
+  background: #DFEDF8;
   padding: 10px 14px;
   border-radius: 12px;
   margin: 12px 0;
@@ -459,7 +459,6 @@
   color: var(--star-active);
 }
 
-/* ===== КОМПАКТНЫЕ ОТСТУПЫ ДЛЯ ФОРМЫ ОТЗЫВА ===== */
 .cabinet-panel textarea {
   margin-bottom: 10px;
 }
@@ -473,7 +472,6 @@
   font-size: 13px;
 }
 
-/* ===== ОТЗЫВЫ В АДМИНКЕ (перенос длинного текста) ===== */
 .cabinet-panel .request-card {
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -490,8 +488,40 @@
   min-width: 60px;
 }
 
-/* Длинный текст отзыва в админке */
 .cabinet-panel .request-details p:last-of-type {
   max-width: 100%;
   overflow-x: auto;
+}
+/* ===== ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ КАБИНЕТА ===== */
+
+.empty-requests {
+  text-align: center;
+  padding: 20px;
+  color: #B8AFA0;
+}
+
+.request-header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.review-textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  margin-bottom: 8px;
+  font-family: 'Inter', sans-serif;
+  resize: vertical;
+}
+
+.review-result {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--green);
+}
+
+.contract-description {
+  margin-bottom: 24px;
 }

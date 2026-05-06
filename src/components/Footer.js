@@ -153,8 +153,8 @@ const handleLeaveRequest = () => {
                   disabled={isLoading}
                 />
                 <label htmlFor="feedbackAgreement">
-                  Я принимаю условия <Link to="/privacy" target="_blank">Политики конфиденциальности</Link> 
-                  и даю согласие на обработку персональных данных
+                  Я принимаю условия <Link to="/privacy" target="_blank">Политики конфиденциальности </Link> 
+                   и даю согласие на обработку персональных данных
                 </label>
               </div>
               <button type="submit" disabled={isLoading}>

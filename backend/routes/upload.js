@@ -4,22 +4,19 @@ const path = require('path');
 const fs = require('fs');
 const db = require('../db');
 const { sendToAdmin, sendToClient } = require('../config/mailer');
-
 const router = express.Router();
-
 const uploadDir = path.join(__dirname, '..', 'uploads');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// ПРОСТАЯ НАСТРОЙКА MULTER - БЕЗ КОДИРОВОК
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
-        // Просто добавляем timestamp и сохраняем оригинальное имя
-        const uniqueName = Date.now() + '_' + file.originalname;
+        const cleanFileName = file.originalname.replace(/\s+/g, '_');         
+        const uniqueName = Date.now() + '_' + cleanFileName; 
         cb(null, uniqueName);
     }
 });
@@ -37,19 +34,36 @@ const upload = multer({
     }
 });
 
-// Загрузить файл
+router.get('/download/:fileId', async (req, res) => {
+    const { fileId } = req.params;
+    try {
+        const [files] = await db.query('SELECT file_name, file_path FROM documents WHERE id_doc = ?', [fileId]);
+
+        if (files.length === 0) {
+            return res.status(404).json({ error: 'Файл не найден' });
+        }
+        const file = files[0];
+        const filePath = path.join(uploadDir, file.file_path);
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ error: 'Файл не найден на сервере' });
+        }
+        res.download(filePath, file.file_name); 
+    } catch (error) {
+        console.error('Ошибка скачивания файла:', error);
+        res.status(500).json({ error: 'Ошибка скачивания файла' });
+    }
+});
+
 router.post('/:requestId/:type', upload.single('file'), async (req, res) => {
     const { requestId, type } = req.params;
     const { uploaded_by } = req.body;
-
     if (!req.file) {
         return res.status(400).json({ error: 'Файл не загружен' });
     }
-
+    console.log('Ориг имя:', req.file.originalname);
     try {
         const filePath = req.file.filename;
         const fileName = req.file.originalname;
-
         const [requests] = await db.query(
             `SELECT r.*, u.fio as client_name, u.email as client_email, u.phone as client_phone
              FROM requests r
@@ -57,12 +71,10 @@ router.post('/:requestId/:type', upload.single('file'), async (req, res) => {
              WHERE r.id_req = ?`,
             [requestId]
         );
-
         const [result] = await db.query(
             'INSERT INTO documents (requests_id_req, file_name, file_path, uploaded_by, file_type) VALUES (?, ?, ?, ?, ?)',
             [requestId, fileName, filePath, uploaded_by, type]
         );
-
         if (requests.length > 0) {
             if (uploaded_by === 'client') {
                 if (type === 'contract_signed') {
@@ -83,13 +95,12 @@ router.post('/:requestId/:type', upload.single('file'), async (req, res) => {
             } else if (uploaded_by === 'admin') {
                 await sendToClient('new_document', {
                     clientEmail: requests[0].client_email,
-                    requestName: requests[0].name,
+requestName: requests[0].name,
                     documentType: type,
                     fileName: fileName
                 });
             }
         }
-
         res.json({ success: true, fileId: result.insertId, fileName: fileName });
     } catch (error) {
         console.error('Ошибка загрузки файла:', error);
@@ -97,10 +108,10 @@ router.post('/:requestId/:type', upload.single('file'), async (req, res) => {
     }
 });
 
-// Получить файлы
+// Получить файлы (GET)
+
 router.get('/:requestId/:type', async (req, res) => {
     const { requestId, type } = req.params;
-
     try {
         const [files] = await db.query(
             'SELECT id_doc, file_name, file_path, uploaded_by, date_add FROM documents WHERE requests_id_req = ? AND file_type = ? ORDER BY date_add DESC',
@@ -113,40 +124,11 @@ router.get('/:requestId/:type', async (req, res) => {
     }
 });
 
-// Скачать файл - ПРОСТАЯ ВЕРСИЯ
-router.get('/download/:fileId', async (req, res) => {
-    const { fileId } = req.params;
-
-    try {
-        const [files] = await db.query('SELECT file_name, file_path FROM documents WHERE id_doc = ?', [fileId]);
-        
-        if (files.length === 0) {
-            return res.status(404).json({ error: 'Файл не найден' });
-        }
-        
-        const file = files[0];
-        const filePath = path.join(uploadDir, file.file_path);
-        
-        if (!fs.existsSync(filePath)) {
-            return res.status(404).json({ error: 'Файл не найден на сервере' });
-        }
-        
-        // САМЫЙ ПРОСТОЙ СПОСОБ - отправить файл напрямую
-        res.download(filePath, file.file_name);
-        
-    } catch (error) {
-        console.error('Ошибка скачивания файла:', error);
-        res.status(500).json({ error: 'Ошибка скачивания файла' });
-    }
-});
-
-// Удалить файл
+// Удалить файл (DELETE)
 router.delete('/:fileId', async (req, res) => {
     const { fileId } = req.params;
-
     try {
         const [files] = await db.query('SELECT file_path FROM documents WHERE id_doc = ?', [fileId]);
-        
         if (files.length > 0) {
             const filePath = path.join(uploadDir, files[0].file_path);
             if (fs.existsSync(filePath)) {
@@ -154,7 +136,6 @@ router.delete('/:fileId', async (req, res) => {
             }
             await db.query('DELETE FROM documents WHERE id_doc = ?', [fileId]);
         }
-        
         res.json({ success: true });
     } catch (error) {
         console.error(error);

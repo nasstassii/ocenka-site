@@ -125,12 +125,15 @@
   cursor: pointer;
   display: flex;
   flex-direction: column;
+  text-decoration: none;
+  color: inherit;
 }
 
 .service-card:hover {
   transform: translateY(-6px);
   box-shadow: var(--shadow);
   border-color: var(--blue);
+  text-decoration: none;
 }
 
 .service-img {
@@ -144,6 +147,7 @@
   font-size: 18px;
   font-family: 'Playfair Display', serif;
   margin: 0;
+  color: var(--text-dark);
 }
 
 .service-card p {
@@ -153,7 +157,6 @@
   font-family: 'Inter', sans-serif;
   line-height: 1.4;
 }
-
 /* ===== КВАЛИФИКАЦИЯ НА ГЛАВНОЙ ===== */
 .qualifications {
   padding: 70px 0;
