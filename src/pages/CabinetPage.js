@@ -66,7 +66,7 @@ function CabinetPage() {
       const filesData = {};
       
       for (const type of types) {
-        const response = await fetch(`http://localhost:5000/api/upload/${requestId}/${type}`);
+        const response = await fetch(`https://ocenka-bakalenko.ru/api/upload/${requestId}/${type}`);
         const data = await response.json();
         filesData[type] = Array.isArray(data) ? data : [];
       }
@@ -174,7 +174,7 @@ function CabinetPage() {
     setUploadingType(type);
 
     try {
-      const response = await fetch(`http://localhost:5000/api/upload/${requestId}/${type}`, {
+      const response = await fetch(`https://ocenka-bakalenko.ru/api/upload/${requestId}/${type}`, {
         method: 'POST',
         body: formData
       });
@@ -248,7 +248,7 @@ function CabinetPage() {
 
   const downloadFile = (fileId, fileName) => {
     try {
-        const downloadUrl = `http://localhost:5000/api/upload/download/${fileId}`;
+        const downloadUrl = `https://ocenka-bakalenko.ru/api/upload/download/${fileId}`;
         const a = document.createElement('a');
         a.href = downloadUrl;
         a.download = fileName;

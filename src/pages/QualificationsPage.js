@@ -14,7 +14,7 @@ function QualificationsPage() {
 
   const loadContent = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/content/qual/all');
+      const response = await fetch('https://ocenka-bakalenko.ru/api/content/qual/all');
       const data = await response.json();
       setContent(data);
     } catch (err) {

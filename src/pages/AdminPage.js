@@ -68,7 +68,7 @@ function AdminPage() {
       const filesData = {};
       
       for (const type of types) {
-        const response = await fetch(`http://localhost:5000/api/upload/${requestId}/${type}`);
+        const response = await fetch(`https://ocenka-bakalenko.ru/api/upload/${requestId}/${type}`);
         const data = await response.json();
         filesData[type] = Array.isArray(data) ? data : [];
       }
@@ -111,7 +111,7 @@ function AdminPage() {
   // ========== КОНТЕНТ (обычный fetch) ==========
   const loadQualification = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/content/qual/all');
+      const response = await fetch('https://ocenka-bakalenko.ru/api/content/qual/all');
       const data = await response.json();
       setQualTexts({
         welcome_text: data.welcome_text || '',
@@ -130,8 +130,8 @@ function AdminPage() {
     setLoadingPrices(true);
     try {
       const [needsRes, movableRes] = await Promise.all([
-        fetch('http://localhost:5000/api/content/prices_needs/all'),
-        fetch('http://localhost:5000/api/content/prices_movable/all')
+        fetch('https://ocenka-bakalenko.ru/api/content/prices_needs/all'),
+        fetch('https://ocenka-bakalenko.ru/api/content/prices_movable/all')
       ]);
       const needsData = await needsRes.json();
       const movableData = await movableRes.json();
@@ -146,7 +146,7 @@ function AdminPage() {
 
   const loadReviews = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/reviews');
+      const response = await fetch('https://ocenka-bakalenko.ru/api/reviews');
       const data = await response.json();
       setReviews(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -156,7 +156,7 @@ function AdminPage() {
 
   const saveQualContent = async (section) => {
     try {
-      await fetch(`http://localhost:5000/api/content/qual/${section}`, {
+      await fetch(`https://ocenka-bakalenko.ru/api/content/qual/${section}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: qualTexts[section] })
@@ -169,7 +169,7 @@ function AdminPage() {
 
   const savePriceNeeds = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/content/prices_needs/bulk', {
+      const response = await fetch('https://ocenka-bakalenko.ru/api/content/prices_needs/bulk', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prices: pricesNeeds })
@@ -188,7 +188,7 @@ function AdminPage() {
 
   const savePriceMovable = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/content/prices_movable/bulk', {
+      const response = await fetch('https://ocenka-bakalenko.ru/api/content/prices_movable/bulk', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prices: pricesMovable })
@@ -235,7 +235,7 @@ function AdminPage() {
     setUploadingType(type);
 
     try {
-      const response = await fetch(`http://localhost:5000/api/upload/${requestId}/${type}`, {
+      const response = await fetch(`https://ocenka-bakalenko.ru/api/upload/${requestId}/${type}`, {
         method: 'POST',
         body: formData
       });
@@ -258,7 +258,7 @@ function AdminPage() {
   const deleteFile = async (fileId, requestId) => {
     if (window.confirm('Удалить этот файл?')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/upload/${fileId}`, {
+        const response = await fetch(`https://ocenka-bakalenko.ru/api/upload/${fileId}`, {
           method: 'DELETE'
         });
         const data = await response.json();
@@ -294,7 +294,7 @@ function AdminPage() {
 
   const downloadFile = async (fileId, fileName) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/upload/download/${fileId}`);
+      const response = await fetch(`https://ocenka-bakalenko.ru/api/upload/download/${fileId}`);
       if (!response.ok) throw new Error('Ошибка загрузки файла');
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);

@@ -31,7 +31,7 @@ async function sendToAdmin(type, data) {
             <p><strong>Описание:</strong> ${data.description || '—'}</p>
             <p><strong>Дата создания:</strong> ${new Date().toLocaleString()}</p>
             <hr>
-            <p><a href="http://localhost:5000">Перейти на сайт</a></p>
+            <p><a href="https://ocenka-bakalenko.ru">Перейти на сайт</a></p>
         `;
     }
     
@@ -44,7 +44,7 @@ async function sendToAdmin(type, data) {
             <p><strong>Загруженный файл:</strong> ${data.fileName}</p>
             <p><strong>Дата загрузки:</strong> ${new Date().toLocaleString()}</p>
             <hr>
-            <p><a href="http://localhost:5000">Перейти на сайт</a></p>
+            <p><a href="https://ocenka-bakalenko.ru">Перейти на сайт</a></p>
         `;
     }
     
@@ -57,7 +57,7 @@ async function sendToAdmin(type, data) {
             <p><strong>Загруженный файл:</strong> ${data.fileName}</p>
             <p><strong>Дата загрузки:</strong> ${new Date().toLocaleString()}</p>
             <hr>
-            <p><a href="http://localhost:5000">Перейти на сайт</a></p>
+            <p><a href="https://ocenka-bakalenko.ru">Перейти на сайт</a></p>
         `;
     }
     
@@ -96,7 +96,7 @@ async function sendToClient(type, data) {
             ${data.comment ? `<p><strong>Комментарий оценщика:</strong> ${data.comment}</p>` : ''}
             <p><strong>Дата обновления:</strong> ${new Date().toLocaleString()}</p>
             <hr>
-            <p><a href="http://localhost:5000">Перейти на сайт</a></p>
+            <p><a href="https://ocenka-bakalenko.ru">Перейти на сайт</a></p>
         `;
     }
     
@@ -111,7 +111,7 @@ async function sendToClient(type, data) {
             <p><strong>Дата загрузки:</strong> ${new Date().toLocaleString()}</p>
             <p>Вы можете скачать документ в личном кабинете.</p>
             <hr>
-            <p><a href="http://localhost:5000">Перейти на сайт</a></p>
+            <p><a href="https://ocenka-bakalenko.ru">Перейти на сайт</a></p>
         `;
     }
     

@@ -35,8 +35,8 @@ function ServicesPage() {
 
   const loadPrices = async () => {
     try {
-      const needsRes = await fetch('http://localhost:5000/api/content/prices_needs/all');
-      const movableRes = await fetch('http://localhost:5000/api/content/prices_movable/all');
+      const needsRes = await fetch('https://ocenka-bakalenko.ru/api/content/prices_needs/all');
+      const movableRes = await fetch('https://ocenka-bakalenko.ru/api/content/prices_movable/all');
       const needsData = await needsRes.json();
       const movableData = await movableRes.json();
       setPricesNeeds(needsData);

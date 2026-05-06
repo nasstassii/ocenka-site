@@ -60,8 +60,8 @@ router.post('/:requestId/:type', upload.single('file'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'Файл не загружен' });
     }
-    console.log('Ориг имя:', req.file.originalname);
     try {
+        const originalFileName = Buffer.from(req.file.originalname,'latin1').toString('utf8');
         const filePath = req.file.filename;
         const fileName = req.file.originalname;
         const [requests] = await db.query(

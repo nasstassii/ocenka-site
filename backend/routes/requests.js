@@ -7,7 +7,7 @@ const { authMiddleware, adminOnly } = require('../middleware/auth');
 
 const router = express.Router();
 
-// ПОЛУЧИТЬ ВСЕ ЗАЯВКИ (только админ)
+// ПОЛУЧИТЬ ВСЕ ЗАЯВКИ 
 router.get('/', authMiddleware, adminOnly, async (req, res) => {
     try {
         const [requests] = await db.query(`
