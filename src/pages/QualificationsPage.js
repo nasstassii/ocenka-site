@@ -1,24 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import AuthModal from '../components/AuthModal';
 
 function QualificationsPage() {
   const [content, setContent] = useState({});
+  const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   useEffect(() => {
     loadContent();
+    loadDocuments();
   }, []);
 
   const loadContent = async () => {
     try {
-      const response = await fetch('https://ocenka-bakalenko.ru/api/content/qual/all');
+      const response = await fetch('http://localhost:5000/api/content/qual/all');
       const data = await response.json();
       setContent(data);
     } catch (err) {
-      console.error('Ошибка загрузки:', err);
+      console.error('Ошибка загрузки квалификации:', err);
+    }
+  };
+
+  const loadDocuments = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/content/documents/list');
+      const data = await response.json();
+      setDocuments(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Ошибка загрузки документов:', err);
     } finally {
       setLoading(false);
     }
@@ -29,28 +39,19 @@ function QualificationsPage() {
     return text.split('\n').filter(line => line.trim().startsWith('•')).map(line => line.replace('•', '').trim());
   };
 
-  const downloadFile = (filePath, fileName) => {
-    const link = document.createElement('a');
-    link.href = filePath;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  if (loading) return (
-    <>
-      <Header onOpenAuth={() => setIsAuthOpen(true)} />
-      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
-      <div className="loading-spinner">Загрузка...</div>
-      <Footer onOpenAuth={() => setIsAuthOpen(true)} />
-    </>
-  );
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <div className="loading-spinner">Загрузка...</div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
-      <Header onOpenAuth={() => setIsAuthOpen(true)} />
-      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+      <Header />
       
       <section className="page-hero">
         <div className="container">
@@ -82,30 +83,29 @@ function QualificationsPage() {
           <div className="welcome-card">
             <h3>Документы</h3>
             <div className="docs-block">
-  <div className="doc-simple">
-    <span className="doc-name">Квалификационный аттестат — Оценка недвижимости (№ 038432-1)</span>
-    <button onClick={() => window.open('/documents/Аттестат_недвижимость.pdf', '_blank')} className="doc-link-btn">
-      Открыть PDF
-    </button>
-  </div>
-  <div className="doc-simple">
-    <span className="doc-name">Квалификационный аттестат — Оценка движимого имущества (№ 037098-2)</span>
-    <button onClick={() => window.open('/documents/Аттестат_движимое.pdf', '_blank')} className="doc-link-btn">
-      Открыть PDF
-    </button>
-  </div>
-  <div className="doc-simple">
-    <span className="doc-name">Свидетельство СРО «НКСО» (рег. № 02082)</span>
-    <button onClick={() => window.open('/documents/Свидетельство_НКСО.pdf', '_blank')} className="doc-link-btn">
-      Открыть PNG
-    </button>
-  </div>
-</div>
+              {documents.length === 0 ? (
+                <p>Документы не загружены</p>
+              ) : (
+                documents.map((doc) => (
+                  <div key={doc.id_doc} className="doc-simple">
+                    <span className="doc-name">{doc.doc_name}</span>
+                    <a 
+                      href={doc.file_path} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="doc-link-btn"
+                    >
+                      Открыть PDF
+                    </a>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </section>
 
-      <Footer onOpenAuth={() => setIsAuthOpen(true)} />
+      <Footer />
     </>
   );
 }

@@ -2,56 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import ReviewsCarousel from '../components/ReviewsCarousel';
 import { fetchPublic } from '../utils/api';
 
-function HomePage({ onOpenAuth }) {
+function HomePage() {
   const location = useLocation();
-  const [heroText, setHeroText] = useState('Добро пожаловать в мою оценочную практику! Меня зовут Бакаленко Ольга, и я – профессиональный оценщик с многолетним опытом в сфере оценки имущества. Позвольте мне стать вашим надежным партнером в сфере оценки!');
-  const [reviews, setReviews] = useState([]);
 
-  useEffect(() => {
-    loadReviews();
-    
-    // Проверяем якорь в URL при загрузке страницы
-    if (location.hash === '#reviews') {
-      setTimeout(() => {
-        const reviewsSection = document.getElementById('reviews');
-        if (reviewsSection) {
-          reviewsSection.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 200);
-    }
-  }, [location.hash]);
-
-  const loadReviews = async () => {
-    try {
-      const response = await fetchPublic('/reviews');
-      const data = await response.json();
-      setReviews(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error('Ошибка загрузки отзывов:', err);
-    }
+  const openEmail = () => {
+    window.location.href = 'mailto:bakalenko-olga@yandex.ru';
   };
-
-  const carouselReviews = reviews.map(r => ({ 
-    author: r.author, 
-    text: r.text, 
-    rating: r.rating 
-  }));
 
   return (
     <>
-      <Header onOpenAuth={onOpenAuth} />
+      <Header />
       
       <section className="hero">
         <div className="container hero-grid">
           <div className="hero-content">
             <div className="hero-badge">частнопрактикующий оценщик</div>
             <h1>Ольга Бакаленко<br /><span>объективная оценка</span> вашего имущества</h1>
-            <p className="hero-desc">{heroText}</p>
+            <p className="hero-desc">Добро пожаловать в мою оценочную практику! Меня зовут Бакаленко Ольга, и я – профессиональный оценщик с многолетним опытом в сфере оценки имущества. Позвольте мне стать вашим надежным партнером в сфере оценки!</p>
             <div>
-              <button onClick={onOpenAuth} className="btn-primary">Заказать оценку <i className="fas fa-arrow-right"></i></button>
+              <button onClick={openEmail} className="btn-primary">
+                <i className="fas fa-envelope"></i> Заказать оценку
+              </button>
               <a href="/services" className="btn-outline">Услуги</a>
             </div>
           </div>
@@ -121,14 +94,7 @@ function HomePage({ onOpenAuth }) {
         </div>
       </section>
 
-      <section id="reviews" className="reviews">
-        <div className="container">
-          <div className="section-title"><h2>Отзывы</h2></div>
-          <ReviewsCarousel reviews={carouselReviews} />
-        </div>
-      </section>
-      
-      <Footer onOpenAuth={onOpenAuth} />
+      <Footer />
     </>
   );
 }

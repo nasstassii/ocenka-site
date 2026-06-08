@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import AuthModal from '../components/AuthModal';
 
 function ServicesPage() {
   const [pricesNeeds, setPricesNeeds] = useState({});
   const [pricesMovable, setPricesMovable] = useState({});
   const [loading, setLoading] = useState(true);
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
   
   const realEstateRef = useRef(null);
   const movableRef = useRef(null);
@@ -20,7 +18,6 @@ function ServicesPage() {
   useEffect(() => {
     if (!loading) {
       const hash = window.location.hash;
-      
       setTimeout(() => {
         if (hash === '#real-estate' && realEstateRef.current) {
           realEstateRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -35,8 +32,9 @@ function ServicesPage() {
 
   const loadPrices = async () => {
     try {
-      const needsRes = await fetch('https://ocenka-bakalenko.ru/api/content/prices_needs/all');
-      const movableRes = await fetch('https://ocenka-bakalenko.ru/api/content/prices_movable/all');
+      // ВАЖНО: локальный сервер на порту 5000
+      const needsRes = await fetch('http://localhost:5000/api/content/prices_needs/all');
+      const movableRes = await fetch('http://localhost:5000/api/content/prices_movable/all');
       const needsData = await needsRes.json();
       const movableData = await movableRes.json();
       setPricesNeeds(needsData);
@@ -51,18 +49,16 @@ function ServicesPage() {
   if (loading) {
     return (
       <>
-        <Header onOpenAuth={() => setIsAuthOpen(true)} />
-        <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+        <Header />
         <div className="loading-spinner">Загрузка цен...</div>
-        <Footer onOpenAuth={() => setIsAuthOpen(true)} />
+        <Footer />
       </>
     );
   }
 
   return (
     <>
-      <Header onOpenAuth={() => setIsAuthOpen(true)} />
-      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+      <Header />
       
       <section className="page-hero">
         <div className="container">
@@ -211,7 +207,7 @@ function ServicesPage() {
                 )}
 
                 <tr className="section-header">
-                  <td colSpan="3"><strong>Скидки при заказе оценки одновременно нескольких объектов (для нежилых объектов):</strong></td>
+                  <td colSpan="3"><strong>Скидки при заказе оценки одновременно нескольких объектов</strong></td>
                 </tr>
                 {pricesNeeds.discount_2 && (
                   <tr className="discount-row">
@@ -374,7 +370,7 @@ function ServicesPage() {
         </div>
       </section>
 
-      <Footer onOpenAuth={() => setIsAuthOpen(true)} />
+      <Footer />
     </>
   );
 }

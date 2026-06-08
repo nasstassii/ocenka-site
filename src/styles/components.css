@@ -190,7 +190,7 @@ nav {
   color: var(--blue);
 }
 
-/* ===== ШАПКА КАБИНЕТА ===== */
+/* ===== ШАПКА КАБИНЕТА (НЕ ИСПОЛЬЗУЕТСЯ, НО ОСТАВЛЕНО) ===== */
 .cabinet-header {
   background: white;
   padding: 20px 0;
@@ -376,7 +376,6 @@ nav {
   background: var(--blue-dark);
 }
 
-/* Чекбокс в форме обратной связи */
 .contact-form .checkbox-wrapper {
   display: flex;
   align-items: center;
@@ -408,6 +407,7 @@ nav {
 .contact-form .checkbox-wrapper label a:hover {
   text-decoration: underline;
 }
+
 .feedback-result {
   margin-top: 16px;
   font-size: 13px;
@@ -426,7 +426,6 @@ nav {
   cursor: not-allowed;
 }
 
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -438,7 +437,6 @@ nav {
   }
 }
 
-/* Анимация загрузки кнопки */
 .contact-form button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
@@ -805,4 +803,289 @@ footer {
 .cookie-reset-btn:hover {
   opacity: 1;
   background: var(--blue-dark);
+}
+
+/* ===== АДМИН-ПАНЕЛЬ (ДОБАВЛЕНО) ===== */
+.admin-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: var(--blue-bg);
+}
+
+.admin-login-card {
+  background: white;
+  padding: 40px;
+  border-radius: 28px;
+  width: 350px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.admin-login-card h2 {
+  color: var(--blue);
+  margin-bottom: 20px;
+}
+
+.admin-login-card input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 30px;
+  border: 1px solid var(--border);
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.admin-login-card button {
+  width: 100%;
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.admin-error {
+  color: #c44;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.admin-container {
+  background: var(--blue-bg);
+  min-height: 100vh;
+}
+
+.admin-header {
+  background: white;
+  padding: 15px 30px;
+  border-bottom: 2px solid var(--blue);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-header h1 {
+  color: var(--blue);
+  margin: 0;
+  font-size: 24px;
+}
+
+.admin-header p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.admin-logout-btn {
+  background: #c44;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+.admin-tabs {
+  max-width: 1200px;
+  margin: 30px auto 0;
+  padding: 0 20px;
+  display: flex;
+  gap: 12px;
+}
+
+.admin-tabs button {
+  background: none;
+  border: none;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 30px;
+  color: var(--text-dark);
+}
+
+.admin-tabs button.active {
+  background: var(--blue);
+  color: white;
+}
+
+.admin-content {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 20px 40px;
+}
+
+.admin-card {
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 30px;
+  border: 1px solid var(--border);
+}
+
+.admin-card h2 {
+  color: var(--blue);
+  margin-top: 0;
+  font-size: 20px;
+}
+
+.admin-price-category {
+  margin-bottom: 20px;
+  border-left: 3px solid var(--blue);
+  padding-left: 15px;
+}
+
+.admin-price-category h4 {
+  margin-bottom: 10px;
+  color: var(--text-dark);
+}
+
+.admin-price-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-price-name {
+  flex: 2;
+  font-size: 14px;
+}
+
+.admin-price-row input {
+  width: 120px;
+  padding: 8px;
+  border-radius: 30px;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.admin-save-btn {
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 30px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.admin-qual-field {
+  margin-bottom: 20px;
+}
+
+.admin-qual-field label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.admin-qual-field textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  resize: vertical;
+  font-family: 'Inter', sans-serif;
+}
+
+.admin-qual-field button {
+  margin-top: 10px;
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 6px 18px;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+.admin-doc-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-doc-item span {
+  flex: 1;
+}
+
+.admin-doc-view {
+  background: var(--blue);
+  color: white;
+  text-decoration: none;
+  padding: 5px 15px;
+  border-radius: 30px;
+  font-size: 12px;
+  margin-right: 10px;
+}
+
+.admin-doc-item button {
+  background: var(--orange);
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.admin-doc-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 15px;
+}
+
+.admin-add-btn {
+  background: var(--green);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.admin-new-doc-form {
+  background: var(--blue-bg);
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.admin-new-doc-form h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: var(--blue);
+}
+
+.admin-new-doc-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 30px;
+  border: 1px solid var(--border);
+}
+
+.admin-form-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-form-buttons button:first-child {
+  background: var(--blue);
+  color: white;
+}
+
+.admin-form-buttons button:last-child {
+  background: transparent;
+  border: 1px solid var(--border);
 }
