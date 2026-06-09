@@ -51,8 +51,7 @@ function AdminPanel() {
         setError('Неверный пароль');
       }
     } catch (err) {
-      console.error('Ошибка:', err);
-      setError('Ошибка подключения к серверу. Убедитесь, что бэкенд запущен на порту 5000');
+      setError('Ошибка подключения к серверу');
     } finally {
       setLoading(false);
     }
@@ -294,7 +293,7 @@ function AdminPanel() {
         {activeTab === 'prices' && (
           <>
             <div className="admin-card">
-              <h2>🏠 Цены на недвижимость</h2>
+              <h2>Цены на недвижимость</h2>
               {loadingPrices ? <div>Загрузка...</div> : Object.entries(needsCategories).map(([category, keys]) => (
                 <div key={category} className="admin-price-category">
                   <h4>{category}</h4>
@@ -311,7 +310,7 @@ function AdminPanel() {
             </div>
 
             <div className="admin-card">
-              <h2>🚗 Цены на движимое имущество</h2>
+              <h2>Цены на движимое имущество</h2>
               {loadingPrices ? <div>Загрузка...</div> : Object.entries(movableCategories).map(([category, keys]) => (
                 <div key={category} className="admin-price-category">
                   <h4>{category}</h4>
@@ -331,7 +330,7 @@ function AdminPanel() {
 
         {activeTab === 'qualification' && (
           <div className="admin-card">
-            <h2>📜 Тексты квалификации</h2>
+            <h2>Тексты квалификации</h2>
             
             <div className="admin-qual-field">
               <label>Приветственный текст</label>
@@ -373,7 +372,7 @@ function AdminPanel() {
 
         {activeTab === 'documents' && (
           <div className="admin-card">
-            <h2>📄 Документы для страницы квалификации</h2>
+            <h2>Документы для страницы квалификации</h2>
             
             <button className="admin-add-btn" onClick={() => setShowNewDocForm(true)}>+ Добавить новый документ</button>
             
@@ -399,7 +398,7 @@ function AdminPanel() {
                   <div>
                     <a href={doc.file_path} target="_blank" rel="noopener noreferrer" className="admin-doc-view">Просмотреть</a>
                     <button onClick={() => handleFileSelect(doc.doc_key)} disabled={uploading}>Заменить</button>
-                    <button onClick={() => deleteDocument(doc.doc_key)} style={{ background: '#c44' }}>Удалить</button>
+                    <button onClick={() => deleteDocument(doc.doc_key)}>Удалить</button>
                   </div>
                 </div>
               ))

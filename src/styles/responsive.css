@@ -1,3 +1,4 @@
+/* ===== ПЛАНШЕТЫ (до 900px) ===== */
 @media (max-width: 900px) {
   .container {
     padding: 0 24px;
@@ -81,7 +82,6 @@
     text-align: left;
   }
   
-  /* Cookie Consent адаптив */
   .cookie-consent {
     padding: 16px;
   }
@@ -90,15 +90,36 @@
     max-width: 90%;
     padding: 16px 20px;
   }
+  
+  .admin-price-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .admin-price-name {
+    margin-bottom: 8px;
+  }
+  
+  .admin-price-row input {
+    width: 100%;
+  }
+  
+  .admin-tabs button {
+    flex: 1 0 auto;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .admin-card {
+    padding: 16px;
+  }
+  
+  .contact-flex {
+    gap: 50px;
+  }
 }
 
-.hero-badge {
-  display: inline-block;
-  width: auto;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
+/* ===== ТЕЛЕФОНЫ (до 600px) ===== */
 @media (max-width: 600px) {
   .container {
     padding: 0 16px;
@@ -134,22 +155,28 @@
   .hero-content h1 {
     font-size: 1.8rem;
   }
-
+  
   .hero-badge {
     display: inline-block;
     width: auto !important;
     white-space: nowrap;
   }
-
+  
   .hero-content div {
     display: flex;
-    gap: 12px;
+    flex-direction: row;
     flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-start;
+    align-items: center;
   }
   
   .hero-content .btn-primary,
   .hero-content .btn-outline {
     margin: 0;
+    display: inline-flex;
+    width: auto;
+    white-space: nowrap;
   }
   
   .btn-outline {
@@ -238,7 +265,6 @@
     padding: 0 16px;
   }
   
-  /* Cookie Consent адаптив */
   .cookie-consent {
     padding: 12px;
   }
@@ -270,8 +296,105 @@
     padding: 8px 20px;
     font-size: 13px;
   }
+  
+  .admin-doc-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .admin-doc-item div {
+    margin-top: 8px;
+  }
+  
+  .admin-price-category h4 {
+    font-size: 14px;
+  }
+  
+  .admin-price-name {
+    font-size: 13px;
+  }
+  
+    /* ТАБЛИЦЫ УСЛУГ НА ТЕЛЕФОНЕ */
+  .price-table {
+    width: 100%;
+    table-layout: fixed;
+  }
+  
+  .price-table th,
+  .price-table td {
+    font-size: 0.68rem;
+    padding: 3px;
+    word-break: break-word;
+  }
+  
+  .price-table th:first-child,
+  .price-table td:first-child {
+    width: 45%;
+    text-align: left;
+  }
+  
+  .price-table th:nth-child(2),
+  .price-table td:nth-child(2) {
+    width: 15%;
+    text-align: center;
+    white-space: nowrap;
+  }
+  
+  .price-table th:nth-child(3),
+  .price-table td:nth-child(3) {
+    width: 40%;
+    text-align: right;
+  }
+
+  
+
+  
+  /* ВЫБОР ПОЧТОВОГО СЕРВИСА НА ТЕЛЕФОНЕ */
+  .email-selector-dropdown {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    margin-bottom: 10px;
+    width: auto;
+    min-width: 200px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+  
+  .email-selector-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* ФУТЕР НА ТЕЛЕФОНЕ */
+  .contact-flex {
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+  
+  .contact-col {
+    text-align: center;
+    width: auto;
+    min-width: 240px;
+  }
+  
+  .contact-col h3 {
+    text-align: center;
+  }
+  
+  .contact-detail {
+    justify-content: center;
+  }
+  
+  .contact-phone-btn,
+  .contact-email-btn {
+    text-align: center;
+  }
 }
 
+/* ===== МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 480px) ===== */
 @media (max-width: 480px) {
   .nav-links {
     gap: 8px;
@@ -283,7 +406,6 @@
     padding: 5px 10px;
   }
   
-  /* Cookie Consent адаптив */
   .cookie-consent {
     padding: 8px;
   }
@@ -321,8 +443,37 @@
     padding: 6px 12px;
     font-size: 10px;
   }
+  
+  .price-table th,
+  .price-table td {
+    font-size: 0.65rem;
+    padding: 4px;
+  }
+  
+  .price-table th:first-child,
+  .price-table td:first-child {
+    width: 40%;
+  }
+  
+  .price-table th:nth-child(2),
+  .price-table td:nth-child(2) {
+    width: 25%;
+  }
+  
+  .price-table th:nth-child(3),
+  .price-table td:nth-child(3) {
+    width: 35%;
+  }
 }
 
+@media (max-width: 400px) {
+  .hero-content div {
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+}
+
+/* ===== ЭКСТРА-МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
 @media (max-width: 380px) {
   .container {
     padding: 0 12px;
@@ -387,7 +538,6 @@
     padding: 4px 10px;
   }
   
-  /* Cookie Consent адаптив */
   .cookie-consent {
     padding: 6px;
   }
@@ -406,6 +556,12 @@
   .cookie-btn-decline {
     padding: 5px 12px;
     font-size: 11px;
+  }
+  
+  .price-table th,
+  .price-table td {
+    font-size: 0.6rem;
+    padding: 3px;
   }
 }
 
@@ -446,6 +602,7 @@
   }
 }
 
+/* ===== ПРОВЕРКА ПОДДЕРЖКИ (iPhone X и новее) ===== */
 @supports (padding: max(0px)) {
   .container {
     padding-left: max(16px, env(safe-area-inset-left));
@@ -453,10 +610,12 @@
   }
 }
 
+/* ===== УБИРАЕМ ПОДСВЕТКУ ПРИ ТАПЕ НА МОБИЛЬНЫХ ===== */
 * {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* ===== ФИКС ДЛЯ ПЛОШКИ hero-badge ===== */
 .hero-badge {
   display: inline-block !important;
   width: fit-content !important;

@@ -1,15 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { fetchPublic } from '../utils/api';
+import EmailSelector from '../components/EmailSelector';
+import AnimatedCounter from '../components/AnimatedCounter';
 
 function HomePage() {
   const location = useLocation();
 
-  const openEmail = () => {
-    window.location.href = 'mailto:bakalenko-olga@yandex.ru';
-  };
+  useEffect(() => {
+    if (location.hash === '#reviews') {
+      setTimeout(() => {
+        const reviewsSection = document.getElementById('reviews');
+        if (reviewsSection) {
+          reviewsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 200);
+    }
+  }, [location.hash]);
 
   return (
     <>
@@ -20,16 +28,14 @@ function HomePage() {
           <div className="hero-content">
             <div className="hero-badge">частнопрактикующий оценщик</div>
             <h1>Ольга Бакаленко<br /><span>объективная оценка</span> вашего имущества</h1>
-            <p className="hero-desc">Добро пожаловать в мою оценочную практику! Меня зовут Бакаленко Ольга, и я – профессиональный оценщик с многолетним опытом в сфере оценки имущества. Позвольте мне стать вашим надежным партнером в сфере оценки!</p>
+            <p className="hero-desc">Добро пожаловать в мою оценочную практику! Меня зовут Бакаленко Ольга, и я – профессиональный оценщик с многолетним опытом в сфере оценки имущества.</p>
             <div>
-              <button onClick={openEmail} className="btn-primary">
-                <i className="fas fa-envelope"></i> Заказать оценку
-              </button>
+              <EmailSelector buttonText="Заказать оценку" className="btn-primary btn-hero" />
               <a href="/services" className="btn-outline">Услуги</a>
             </div>
           </div>
           <div className="hero-photo">
-            <img src="photo.jpg" alt="Ольга Бакаленко" onError={(e) => e.target.src = 'https://placehold.co/450x500/4A7A9E/white?text=Ольга+Бакаленко'} />
+            <img src="photo.jpg" alt="Ольга Бакаленко" className="hero-img" />
           </div>
         </div>
       </section>
@@ -38,10 +44,22 @@ function HomePage() {
         <div className="container">
           <div className="section-title"><h2>Почему выбирают меня</h2></div>
           <div className="why-grid">
-            <div className="why-item"><div className="why-number">15 лет</div><div className="why-label">оценочной деятельности</div></div>
-            <div className="why-item"><div className="why-number">500+</div><div className="why-label">успешных отчётов</div></div>
-            <div className="why-item"><div className="why-number">100%</div><div className="why-label">принятие в судах</div></div>
-            <div className="why-item"><div className="why-number">15+</div><div className="why-label">регионов РФ</div></div>
+            <div className="why-item">
+              <div className="why-number"><AnimatedCounter end={15} suffix=" лет" /></div>
+              <div className="why-label">оценочной деятельности</div>
+            </div>
+            <div className="why-item">
+              <div className="why-number"><AnimatedCounter end={500} suffix="+" /></div>
+              <div className="why-label">успешных отчётов</div>
+            </div>
+            <div className="why-item">
+              <div className="why-number"><AnimatedCounter end={100} suffix="%" /></div>
+              <div className="why-label">принятие в судах</div>
+            </div>
+            <div className="why-item">
+              <div className="why-number"><AnimatedCounter end={15} suffix="+" /></div>
+              <div className="why-label">регионов РФ</div>
+            </div>
           </div>
         </div>
       </section>
@@ -67,7 +85,7 @@ function HomePage() {
             </a>
           </div>
           <div className="services-button">
-            <a href="/services" className="btn-primary">Подробнее об услугах <i className="fas fa-arrow-right"></i></a>
+            <a href="/services" className="btn-primary">Подробнее об услугах</a>
           </div>
         </div>
       </section>
@@ -78,9 +96,15 @@ function HomePage() {
           <div className="qualifications-grid">
             <div className="qual-left">
               <p><strong>Образование:</strong> высшее юридическое (РГЭУ «РИНХ») и профессиональная переподготовка по программе «Оценка собственности».</p>
-              <h3>Квалификационные аттестаты</h3><ul><li>Оценка недвижимости (№ 038432‑1 от 07.06.2024)</li><li>Оценка движимого имущества (№ 037098‑2 от 24.05.2024)</li></ul>
-              <h3>Членство в СРО</h3><p>Ассоциация СРО «Национальная коллегия специалистов-оценщиков», регистрационный номер 02082 от 29.07.2011 г.</p>
-              <h3>Страхование ответственности</h3><p>СПАО «Ингосстрах», полис № 433-589-116108/25</p>
+              <h3>Квалификационные аттестаты</h3>
+              <ul>
+                <li>Оценка недвижимости (№ 038432‑1 от 07.06.2024)</li>
+                <li>Оценка движимого имущества (№ 037098‑2 от 24.05.2024)</li>
+              </ul>
+              <h3>Членство в СРО</h3>
+              <p>Ассоциация СРО «Национальная коллегия специалистов-оценщиков», регистрационный номер 02082 от 29.07.2011 г.</p>
+              <h3>Страхование ответственности</h3>
+              <p>СПАО «Ингосстрах», полис № 433-589-116108/25</p>
             </div>
             <div className="qual-right">
               <div className="doc-badge"><i className="fas fa-graduation-cap"></i><span>Диплом юриста</span></div>
@@ -88,7 +112,7 @@ function HomePage() {
               <div className="doc-badge"><i className="fas fa-certificate"></i><span>Аттестат недвижимость</span></div>
               <div className="doc-badge"><i className="fas fa-certificate"></i><span>Аттестат движимое имущество</span></div>
               <div className="doc-badge"><i className="fas fa-shield-alt"></i><span>Страховой полис</span></div>
-              <a href="/qualifications" className="btn-primary qualifications-link">Подробнее о квалификации <i className="fas fa-arrow-right"></i></a>
+              <a href="/qualifications" className="btn-primary qualifications-link">Подробнее о квалификации</a>
             </div>
           </div>
         </div>

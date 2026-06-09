@@ -32,7 +32,6 @@ function ServicesPage() {
 
   const loadPrices = async () => {
     try {
-      // ВАЖНО: локальный сервер на порту 5000
       const needsRes = await fetch('http://localhost:5000/api/content/prices_needs/all');
       const movableRes = await fetch('http://localhost:5000/api/content/prices_movable/all');
       const needsData = await needsRes.json();
@@ -73,7 +72,6 @@ function ServicesPage() {
             <p>Оценщиком проводится оценка недвижимости и движимого имущества для различных целей: оценка для оформления наследственного имущества; оценка для родственного раздела имущества; оценка для предоставления в органы опеки; оценка для продажи; оценка для суда; оценка для определения стоимости права пользования и др.</p>
           </div>
 
-          {/* Оценка недвижимости */}
           <div id="real-estate" ref={realEstateRef} className="price-card">
             <h3>Оценка недвижимости</h3>
             <table className="price-table">
@@ -207,7 +205,7 @@ function ServicesPage() {
                 )}
 
                 <tr className="section-header">
-                  <td colSpan="3"><strong>Скидки при заказе оценки одновременно нескольких объектов</strong></td>
+                  <td colSpan="3"><strong>Скидки при заказе оценки одновременно нескольких объектов (для нежилых объектов):</strong></td>
                 </tr>
                 {pricesNeeds.discount_2 && (
                   <tr className="discount-row">
@@ -249,7 +247,6 @@ function ServicesPage() {
             <p>Оценка автотранспорта является очень востребованной оценочной услугой. Потребность в оценке автомобилей и других транспортных средств возникает в случае продажи, при имущественных спорах. Поскольку автотранспорт не имеет кадастровой стоимости, его оценка обязательно производится и при оформлении наследства.</p>
           </div>
 
-          {/* Оценка движимого имущества */}
           <div id="movable" ref={movableRef} className="price-card">
             <h3>Оценка движимого имущества</h3>
             <table className="price-table">

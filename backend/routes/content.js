@@ -18,9 +18,7 @@ const documentStorage = multer.diskStorage({
         cb(null, documentsDir);
     },
     filename: (req, file, cb) => {
-        // Декодируем имя файла из latin1 в utf8
         const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
-        // ТОЛЬКО заменяем пробелы на подчёркивания, НЕ трогаем русские буквы
         const safeName = originalName.replace(/\s+/g, '_');
         cb(null, safeName);
     }
@@ -28,7 +26,7 @@ const documentStorage = multer.diskStorage({
 
 const uploadDoc = multer({ storage: documentStorage });
 
-// ========== ПРОВЕРКА ПАРОЛЯ ==========
+// ========== ПРОВЕРКА ПАРОЛЯ ДЛЯ АДМИН-ПАНЕЛИ ==========
 router.post('/admin/check', async (req, res) => {
     const { password } = req.body;
     if (password === process.env.ADMIN_PASSWORD) {
@@ -147,7 +145,6 @@ router.put('/prices_movable/bulk', async (req, res) => {
 });
 
 // ========== ДОКУМЕНТЫ ==========
-
 router.get('/documents/list', async (req, res) => {
     try {
         const [documents] = await db.query(
@@ -170,7 +167,6 @@ router.post('/documents/upload', uploadDoc.single('file'), async (req, res) => {
     
     try {
         const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
-        // ТОЛЬКО заменяем пробелы на подчёркивания
         const safeName = originalName.replace(/\s+/g, '_');
         const filePath = `/documents/${encodeURIComponent(safeName)}`;
         

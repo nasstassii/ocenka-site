@@ -1,33 +1,17 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './index.css';
 import HomePage from './pages/HomePage';
 import ServicesPage from './pages/ServicesPage';
 import QualificationsPage from './pages/QualificationsPage';
 import AdminPanel from './pages/AdminPanel';
-//import CookieConsent from './components/CookieConsent';
-
-/*
-function YandexMetrikaTracker() {
-  const location = useLocation();
-
-  useEffect(() => {
-    if (window.ym) {
-      window.ym(109213929, 'hit', location.pathname + location.search);
-    }
-  }, [location]);
-
-  return null;
-}
-*/
+import PrivacyPage from './pages/PrivacyPage';
 
 function ScrollToTopWrapper({ children }) {
   const { pathname } = useLocation();
-
-  useEffect(() => {
+  React.useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-
   return children;
 }
 
@@ -40,9 +24,8 @@ function App() {
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/qualifications" element={<QualificationsPage />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
         </Routes>
-        {/*<YandexMetrikaTracker />
-        <CookieConsent />*/}
       </ScrollToTopWrapper>
     </Router>
   );

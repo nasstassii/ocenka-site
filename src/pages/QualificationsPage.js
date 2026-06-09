@@ -95,7 +95,7 @@ function QualificationsPage() {
                       rel="noopener noreferrer" 
                       className="doc-link-btn"
                     >
-                      Открыть PDF
+                      Просмотреть
                     </a>
                   </div>
                 ))
